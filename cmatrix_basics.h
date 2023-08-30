@@ -29,11 +29,13 @@ void print_matrix(Matrix);
 void print_row(Matrix, int);
 Matrix add_matrix(Matrix, Matrix);
 Matrix multiply_matrix(Matrix, Matrix);
-void scale_matrix(Matrix, elem_t);
+Matrix scale_matrix(Matrix, elem_t);
 Matrix matrix_power(Matrix, int);
 Matrix transpose(Matrix);
 Matrix inverse(Matrix);
 Matrix append_horizontal(const Matrix, const Matrix);
+void set_submatrix(Matrix, Matrix, int, int);
+Matrix get_submatrix(Matrix, int, int, int, int);
 int is_symmetric(Matrix);
 int is_orthogonal(Matrix);
 
@@ -47,9 +49,10 @@ void clear_vector(Vector);
 void print_vector(Vector);
 Vector add_vector(Vector, Vector);
 Vector multiply_matrix_vector(Matrix, Vector);
-void scale_vector(Vector, elem_t);
-elem_t vector_length(Vector);
+Vector scale_vector(Vector, elem_t);
+elem_t norm(Vector);
 elem_t normalize(Vector);
+void normalize_columns(Matrix A);
 elem_t dot_product(Vector, Vector);
 Vector cross_product(Vector, Vector);
 
@@ -58,8 +61,14 @@ Matrix vector_to_column_matrix(Vector);
 Vector matrix_to_vector(Matrix);
 Vector get_row_vector(Matrix, int);
 Vector get_column_vector(Matrix, int);
+Matrix combine_row_vectors(Vector *, int);
+Matrix combine_column_vectors(Vector *, int);
+Vector *get_row_vectors(Matrix);
+Vector *get_column_vectors(Matrix);
 
 Vector std_unit_vector(int, int);
 Matrix identity(int);
+Matrix householder_reflection(const Vector v);
+Matrix vector_projection_matrix(const Vector v);
 
 #endif

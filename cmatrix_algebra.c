@@ -1,7 +1,6 @@
 #include <math.h>
 #include "cmatrix_algebra.h"
 #include "cmatrix_basics.h"
-#include "cmatrix_geometry.h"
 
 /**
  * @brief Swaps two rows of a matrix in place.
@@ -218,26 +217,16 @@ Matrix basis_transform(const Matrix A, const Matrix T)
  * @param nvecs the number of vectors to be tested
  * @return int: 1 if they are linearly independent, 0 if not
  */
-int linear_independence(Vector *vecs, int nvecs)
+int linear_independence(Vector *vecs, const int nvecs)
 {
     register int d = vecs[0]->dim;
     if(nvecs > d)
     {
         return 0;
     }
-    Matrix vec_matrix = new_matrix(nvecs, d);
-    for (int i = 0; i < nvecs; i++)
-    {
-        set_matrix_row(vec_matrix, i, vecs[i]->elements);
-    }
+    Matrix vec_matrix = combine_row_vectors(vecs, nvecs);
     row_echelon_form(vec_matrix);
     return !vector_is_equal(new_vector(d), get_row_vector(vec_matrix, nvecs-1));
-}
-
-int row_linear_independence(Matrix vecs)
-{
-    row_echelon_form(vecs);
-    return !vector_is_equal(new_vector(vecs->cols), get_row_vector(vecs, vecs->rows-1));
 }
 
 
@@ -250,7 +239,7 @@ int row_linear_independence(Matrix vecs)
  * @param nvecs the number of vectors in the set
  * @return Matrix: the vectors consisting the orthogonal basis
  */
-Matrix gram_schmidt_orthogonal_basis(Vector *vecs, int nvecs)
+Matrix GS_orthogonal_basis(Vector *vecs, int nvecs)
 {
     int d = vecs[0]->dim;
     Matrix basis = vector_to_column_matrix(vecs[0]);
@@ -260,7 +249,7 @@ Matrix gram_schmidt_orthogonal_basis(Vector *vecs, int nvecs)
     {
         Vector vi_perp = vecs[i];
         Matrix v_prev_proj = vector_projection_matrix(vecs[i-1]);
-        scale_matrix(v_prev_proj, -1);
+        v_prev_proj = scale_matrix(v_prev_proj, -1);
         vec_to_perp = add_matrix(vec_to_perp, v_prev_proj);
         vi_perp = multiply_matrix_vector(vec_to_perp, vi_perp);
         basis = append_horizontal(basis, vector_to_column_matrix(vi_perp));
@@ -270,14 +259,66 @@ Matrix gram_schmidt_orthogonal_basis(Vector *vecs, int nvecs)
 }
 
 /**
- * @brief Computes the QR decomposition for a matrix.
- * 
- * @param A the matrix to be decomposed
- * @return Matrix*: [0] is Q, and [1] is R.
+ * @brief Computes the QR decomposition of a matrix.
+ *  
+ * @param A the matrix
+ * @return Matrix*: [0] is Q, and [1] is R
  */
-Matrix *qr_decomposition(Matrix A)
+Matrix *QR_decomposition(const Matrix A)
 {
+    check_null(A);
+    int r=A->rows, c=A->cols;
+    Matrix R = copy_matrix(A);
+    Matrix Q = identity(r);
+    for (int i = 0; i < c; i++)
+    {
+        Matrix A_sub = get_submatrix(A, i, i, r, c);
+        Vector col_i = get_column_vector(A_sub, 0);
+        Vector e_i = std_unit_vector(r-i, 0);
+        e_i = scale_vector(e_i, norm(col_i) * (-1));
+        Vector reflect_v = add_vector(col_i, e_i);  // v_i - norm(v_i) * e_i is the reflection vector
+        if (!nearly_zero(norm(reflect_v)))
+        {
+            normalize(reflect_v);
+            Matrix reflect_mat = householder_reflection(reflect_v);
+            Matrix reflect_mat_full = identity(r);
+            set_submatrix(reflect_mat_full, reflect_mat, i, i);
+            R = multiply_matrix(reflect_mat_full, R);
+            Q = multiply_matrix(reflect_mat_full, Q);
+        }
+    }
+    return (Matrix []) {inverse(Q), R};
+}
 
+/**
+ * @brief Computes the QR decomposition of a matrix, R only.
+ * 
+ * @param A the matrix
+ * @return Matrix: the upper triangle matrix
+ */
+Matrix QR_decomposition_R_only(Matrix A)
+{
+    check_null(A);
+    int r=A->rows, c=A->cols;
+    Matrix R = copy_matrix(A);
+
+    for (int i = 0; i < c; i++)
+    {
+        Matrix A_sub = get_submatrix(A, i, i, r, c);
+        Vector col_i = get_column_vector(A_sub, 0);
+        Vector e_i = std_unit_vector(r-i, 0);
+        e_i = scale_vector(e_i, norm(col_i) * (-1));
+        Vector reflect_v = add_vector(col_i, e_i);  // v_i - norm(v_i) * e_i is the reflection vector
+        if (!nearly_zero(norm(reflect_v)))
+        {
+            normalize(reflect_v);
+            Matrix reflect_v_full = new_matrix(r, 1);
+            set_submatrix(reflect_v_full, vector_to_column_matrix(reflect_v), i, 0);
+            // ! this doesn't work: why can't we distribute I - 2uu'?
+            R = add_matrix(A, scale_matrix(multiply_matrix(reflect_v_full, multiply_matrix(transpose(reflect_v_full), A)), (elem_t) -2));
+        }
+    }
+    return R;
 }
 
 Matrix eigenvectors(Matrix A)

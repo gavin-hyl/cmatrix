@@ -3,9 +3,7 @@
 
 #include "cmatrix_defs.h"
 
-Matrix vector_projection_matrix(Vector);
 Matrix rotation_matrix_2d(elem_t);
-Matrix reflect_about_vector(Vector);
 Matrix rotation_matrix_3d(Vector, elem_t);
 Matrix reflect_about_plane(Vector, Vector);
 Matrix reflect_about_normal(Vector);

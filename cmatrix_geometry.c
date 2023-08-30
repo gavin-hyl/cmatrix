@@ -4,25 +4,6 @@
 #include "cmatrix_geometry.h"
 
 /**
- * @brief Computes the projection matrix of the space onto a vector. 
- * 
- * @param v the vector to be projected on to
- * @return the projection matrix
- */
-Matrix vector_projection_matrix(const Vector v)
-{
-    check_null(v);
-    elem_t length = vector_length(v);
-    if (length == 0)
-    {
-        return identity(v->dim);
-    }
-    Matrix proj_v = multiply_matrix(vector_to_column_matrix(v), vector_to_row_matrix(v));
-    scale_matrix(proj_v, 1 / dot_product(v, v));
-    return proj_v;
-}
-
-/**
  * @brief A 2D counterclockwise rotation centered at the origin.
  * 
  * @param angle the angle to rotate 
@@ -37,25 +18,6 @@ Matrix rotation_matrix_2d(const elem_t angle)
     mat->elements[0][1] = -sin(angle);
     mat->elements[1][1] = cos(angle);
     return mat;
-}
-
-/**
- * @brief Computes the reflection matrix of the n-D space about a vector, ie.
- * rotating the space 180 degrees around that vector.
- * 
- * @param v the vector about which the space is reflected
- * @return the reflection matrix
- */
-Matrix reflect_about_vector(const Vector v)
-{
-    check_null(v);
-    int d = v->dim;
-
-    Matrix mir = vector_projection_matrix(v);
-    scale_matrix(mir, 2);
-    Matrix I = identity(d);
-    scale_matrix(I, -1);
-    return add_matrix(mir, I);
 }
 
 /**
@@ -89,7 +51,7 @@ Matrix reflect_about_plane(const Vector v1, const Vector v2)
     check_equal_dimension(v1, v2);
     Vector normal = cross_product(v1, v2);
     Matrix normal_project = vector_projection_matrix(normal);
-    scale_matrix(normal_project, -2);
+    normal_project = scale_matrix(normal_project, -2);
     return add_matrix(normal_project, identity(v1->dim));
 }
 
@@ -102,7 +64,7 @@ Matrix reflect_about_plane(const Vector v1, const Vector v2)
 Matrix reflect_about_normal(const Vector v)
 {   
     Matrix normal_project = vector_projection_matrix(v);
-    scale_matrix(normal_project, -2);
+    normal_project = scale_matrix(normal_project, -2);
     return add_matrix(normal_project, identity(v->dim));
 }
 
@@ -116,7 +78,7 @@ Matrix reflect_about_normal(const Vector v)
 Vector unit_normal(const Vector v, const Vector w)
 {
     Vector unit_norm = cross_product(v, w);
-    scale_vector(unit_norm, 1 / (vector_length(v) * vector_length(w)));
+    unit_norm = scale_vector(unit_norm, 1 / (norm(v) * norm(w)));
     return unit_norm;
 }
 

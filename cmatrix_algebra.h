@@ -11,6 +11,9 @@ elem_t row_echelon_form(Matrix);
 elem_t determinant(Matrix);
 Vector solve_linear_system(Matrix, Vector);
 Matrix basis_transform(Matrix, Matrix);
-int linear_independence(Vector *, int);
+int linear_independence(Vector *, const int);
+Matrix *QR_decomposition(const Matrix);
+Matrix QR_decomposition_R_only(const Matrix);
+
 
 #endif

@@ -390,23 +390,26 @@ Matrix multiply_matrix(Matrix A, Matrix B)
 }
 
 /**
- * @brief Scales a matrix with a scalar in place.
+ * @brief Scales a matrix with a scalar
  * 
  * @param A the matrix to be scaled
  * @param n the scaling factor
+ * @return Matrix: the scaled matrix
  */
-void scale_matrix(Matrix A, elem_t n)
+Matrix scale_matrix(Matrix A, elem_t n)
 {
     check_null(A);
+    Matrix Acpy = copy_matrix(A);
     int r=A->rows, c=A->cols;
 
     for (int i = 0; i < r; i++)
     {
         for (int j = 0; j < c; j++)
         {
-            A->elements[i][j] *= n;
+            Acpy->elements[i][j] *= n;
         }
     }
+    return Acpy;
 }
 
 /**
@@ -537,6 +540,47 @@ Matrix append_horizontal(Matrix A, Matrix B)
     return M;
 }
 
+void set_submatrix(Matrix A, Matrix a, int r1, int c1)
+{
+    int r=a->rows, c=a->cols, R=A->rows, C=A->cols;
+    if (r1+r>R || c1+c>C)
+    {
+        fprintf(stderr, "Boundaries of A exceeded.\n");
+        exit(1);
+    }
+    for (int i = 0; i < r; i++)
+    {
+        for (int j = 0; j < c; j++)
+        {
+            A->elements[r1+i][c1+j] = a->elements[i][j];
+        }
+    }
+}
+
+/**
+ * @brief Get the submatrix object
+ * 
+ * @param A 
+ * @param r1 
+ * @param c1 
+ * @param r2 
+ * @param c2 
+ * @return Matrix 
+ */
+Matrix get_submatrix(Matrix A, int r1, int c1, int r2, int c2)
+{
+    int R=A->rows, C=A->cols, r=r2-r1, c=c2-c1;
+    Matrix submatrix = new_matrix(r, c);
+    for (int i = 0; i < r; i++)
+    {
+        for (int j = 0; j < c; j++)
+        {
+            submatrix->elements[i][j] = A->elements[r1+i][c1+j];
+        }
+    }
+    return submatrix;
+}
+
 /**
  * @brief Checks if a matrix is orthogonal
  * 
@@ -553,6 +597,12 @@ int is_orthogonal(Matrix A)
     return matrix_is_equal(identity(A->cols), multiply_matrix(A, At));
 }
 
+/**
+ * @brief Checks if a matrix is symmetric
+ * 
+ * @param A the matrix
+ * @return int: 1 if A is symmetric, 0 if not
+ */
 int is_symmetric(Matrix A)
 {
     if (A->rows != A->cols)
@@ -598,6 +648,7 @@ Vector copy_vector(Vector v)
     {
         cpy->elements[i] = v->elements[i];
     }
+    return cpy;
 }
 
 /**
@@ -724,6 +775,7 @@ Vector add_vector(Vector v, Vector w)
     {
         result->elements[d] = v->elements[d] + w->elements[d];
     }
+    return result;
 }
 
 /**
@@ -745,16 +797,18 @@ Vector multiply_matrix_vector(Matrix A, Vector v)
  * 
  * @param v the vector to be multiplied
  * @param k the scaling factor
+ * @return Vector: the scaled vector
  */
-void scale_vector(Vector v, elem_t k)
+Vector scale_vector(Vector v, elem_t k)
 {
     check_null(v);
     int d = v->dim;
-
+    Vector vcpy = copy_vector(v);
     while (d-- > 0)
     {
-        v->elements[d] *= k;
+        vcpy->elements[d] *= k;
     }
+    return vcpy;
 }
 
 /**
@@ -763,7 +817,7 @@ void scale_vector(Vector v, elem_t k)
  * @param v the vector
  * @return the length
  */
-elem_t vector_length(Vector v)
+elem_t norm(Vector v)
 {
     check_null(v);
     int d = v->dim;
@@ -786,7 +840,7 @@ elem_t normalize(Vector v)
 {
     check_null(v);
     int d = v->dim;
-    elem_t length = vector_length(v);
+    elem_t length = norm(v);
 
     for (int i = 0; i < d; i++)
     {
@@ -969,6 +1023,48 @@ Vector get_column_vector(Matrix A, int c)
     return col;
 }
 
+Matrix combine_row_vectors(Vector *vecs, int nvecs)
+{
+    Matrix combined = new_matrix(nvecs, vecs[0]->dim);
+    for (int i = 0; i < nvecs; i++)
+    {
+        set_matrix_row(combined, i, vecs[i]->elements);
+    }
+    return combined;
+}
+
+Matrix combine_column_vectors(Vector *vecs, int nvecs)
+{
+    Matrix combined = new_matrix(vecs[0]->dim, nvecs);
+    for (int i = 0; i < nvecs; i++)
+    {
+        set_matrix_column(combined, i, vecs[i]->elements);
+    }
+    return combined;
+}
+
+Vector *get_row_vectors(Matrix A)
+{
+    int r = A->rows;
+    Vector *vecs = (Vector *) calloc(r, sizeof(Vector));
+    for (int i = 0; i < r; i++)
+    {
+        vecs[i] = get_row_vector(A, i);
+    }
+    return vecs;
+}
+
+Vector *get_column_vectors(Matrix A)
+{
+    int c = A->cols;
+    Vector *vecs = (Vector *) calloc(c, sizeof(Vector));
+    for (int i = 0; i < c; i++)
+    {
+        vecs[i] = get_row_vector(A, i);
+    }
+    return vecs;
+}
+
 /**
  * @brief Generates an identity matrix.
  * 
@@ -989,7 +1085,7 @@ Matrix identity(int d)
  * @brief Generates a standard unit vector in n-D space. 
  * 
  * @param dim the dimension of the unit vector
- * @param n the index of the unit vector, ie. which column of the identity it is. 
+ * @param n the index (from 0) of the unit vector, ie. which column of the identity it is
  * @return the unit vector
  */
 Vector std_unit_vector(int dim, int n)
@@ -1000,6 +1096,41 @@ Vector std_unit_vector(int dim, int n)
         exit(1);
     }
     Vector b = new_vector(dim);
-    b->elements[n-1] = 1;
+    b->elements[n] = 1;
     return b;
+}
+
+/**
+ * @brief Computes the projection matrix of the space onto a vector. 
+ * 
+ * @param v the vector to be projected on to
+ * @return the projection matrix
+ */
+Matrix vector_projection_matrix(const Vector v)
+{
+    check_null(v);
+    elem_t length = norm(v);
+    if (length == 0)
+    {
+        return identity(v->dim);
+    }
+    Matrix proj_v = multiply_matrix(vector_to_column_matrix(v), vector_to_row_matrix(v));
+    proj_v = scale_matrix(proj_v, 1 / dot_product(v, v));
+    return proj_v;
+}
+
+/**
+ * @brief Computes the Householder reflection matrix of the n-D space about a
+ * vector, ie. rotating the space 180 degrees around that vector.
+ * 
+ * @param v the vector about which the space is reflected
+ * @return the reflection matrix
+ */
+Matrix householder_reflection(Vector v)
+{
+    check_null(v);
+    Matrix mir = vector_projection_matrix(v);
+    mir = scale_matrix(mir, -2);
+    Matrix I = identity(v->dim);
+    return add_matrix(mir, I);
 }
