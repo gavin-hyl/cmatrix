@@ -1,12 +1,15 @@
 #ifndef _CMATRIX_DEFS_H_
 #define _CMATRIX_DEFS_H_
 
-#define EPSILON 0.01
-#define ELEMENTWIDTH 7  // for printing the matrix, has no influence on calculations.
-#define ELEMENTPREC 2
+#include <stdio.h>
+#include <stdlib.h>
 
+#define ELEMENT_PRINT_WIDTH 7
+#define ELEMENT_PRINT_PRECISION 2
+
+#define EPSILON 0.01
 typedef double elem_t;  // must be either float or double, NOT long double
-#define nearly_zero(e) (e<EPSILON && e>(-1)*EPSILON)
+#define nearly_zero(e) (abs(e)<EPSILON)
 
 typedef struct MaTrix {
     int rows;
@@ -21,14 +24,10 @@ typedef struct VecTor {
     elem_t *elements;
 } *Vector;
 
-// const struct Vector e2x = E2X;
-
-
-// A series of error-checking macros are defined here as well.
-
-#include <stdio.h>
-#include <stdlib.h>
-
+/**
+ * A series of error-checking macros are defined here as well.
+ * They will exit the program immediately if the condition is not satisfied.
+*/
 #define check_null(A) \
 ({  \
     if (A == NULL)  \

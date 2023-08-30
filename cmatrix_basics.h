@@ -1,3 +1,13 @@
+/**
+ * @file cmatrix_basics.h
+ * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
+ * @brief Functions for creating and initializing matrices and vectors. Also
+ * include basic operations for these objects.
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef _CMATRIX_BASICS_H_
 #define _CMATRIX_BASICS_H_
 
@@ -5,7 +15,7 @@
 
 Matrix new_matrix(int, int);
 Matrix copy_matrix(Matrix);
-int compare_matrix(Matrix, Matrix);
+int matrix_is_equal(Matrix, Matrix);
 void set_matrix_by_value(Matrix, elem_t);
 void set_matrix_by_function(Matrix, elem_t (*)(int, int));
 void set_matrix_by_line(Matrix, elem_t *, char);
@@ -24,10 +34,12 @@ Matrix matrix_power(Matrix, int);
 Matrix transpose(Matrix);
 Matrix inverse(Matrix);
 Matrix append_horizontal(const Matrix, const Matrix);
+int is_symmetric(Matrix);
+int is_orthogonal(Matrix);
 
 Vector new_vector(int);
 Vector copy_vector(Vector);
-int compare_vector(Vector, Vector);
+int vector_is_equal(Vector, Vector);
 void set_vector_by_value(Vector, elem_t);
 void set_vector_by_function(Vector, elem_t (*)(int));
 void set_vector(Vector, elem_t *);
@@ -37,7 +49,7 @@ Vector add_vector(Vector, Vector);
 Vector multiply_matrix_vector(Matrix, Vector);
 void scale_vector(Vector, elem_t);
 elem_t vector_length(Vector);
-void normalize(Vector);
+elem_t normalize(Vector);
 elem_t dot_product(Vector, Vector);
 Vector cross_product(Vector, Vector);
 

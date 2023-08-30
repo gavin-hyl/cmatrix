@@ -1,8 +1,23 @@
+/**
+ * @file cmatrix_basics.c
+ * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
+ * @brief Implementation of cmatrix_basics.h
+ * 
+ * @copyright Copyright (c) 2023
+ */
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "cmatrix_basics.h"
 
+/**
+ * @brief Allocates memory for a new matrix.
+ * 
+ * @param r the rows of the matrix
+ * @param c the columns of the matrix
+ * @return Matrix: the new matrix
+ */
 Matrix new_matrix(int r, int c)
 {
     Matrix A = (Matrix) malloc(sizeof(struct MaTrix));
@@ -18,6 +33,12 @@ Matrix new_matrix(int r, int c)
     return A;
 }
 
+/**
+ * @brief Allocates memory for a new matrix, and copies the old matrix to it.
+ * 
+ * @param A the matrix to be copied
+ * @return Matrix: the copy
+ */
 Matrix copy_matrix(Matrix A)
 {
     int r=A->rows, c=A->cols;
@@ -33,11 +54,21 @@ Matrix copy_matrix(Matrix A)
     return cpy;
 }
 
-int compare_matrix(Matrix A, Matrix B)
+/**
+ * @brief Compares two matrices. 
+ * 
+ * @param A the first matrix.
+ * @param B the second matrix.
+ * @return int: 1 if they have the same size and same element values, 0 if not.
+ */
+int matrix_is_equal(Matrix A, Matrix B)
 {
     check_null(A);
     check_null(B);
-    check_equal_size(A, B);
+    if (A->rows!=B->rows || A->cols!=B->cols)
+    {
+        return 1;
+    }
     int r=A->rows, c=A->cols;
     
     for (int i = 0; i < r; i++)
@@ -46,13 +77,19 @@ int compare_matrix(Matrix A, Matrix B)
         {
             if (!nearly_zero(A->elements[i][j] - B->elements[i][j]))
             {
-                return 1;
+                return 0;
             }
         }
     }
-    return 0;
+    return 1;
 }
 
+/**
+ * @brief Set all elements of a matrix to a value.
+ * 
+ * @param A the matrix
+ * @param val the value
+ */
 void set_matrix_by_value(Matrix A, elem_t val)
 {
     check_null(A);
@@ -67,6 +104,12 @@ void set_matrix_by_value(Matrix A, elem_t val)
     }
 }
 
+/**
+ * @brief Sets all elements of the matrix with a custom function.
+ * 
+ * @param A the matrix to be set
+ * @param gen the function, takes two arguments (the row and column of the current element)
+ */
 void set_matrix_by_function(Matrix A, elem_t (*gen)(int, int))
 {
     check_null(A);
@@ -81,6 +124,13 @@ void set_matrix_by_function(Matrix A, elem_t (*gen)(int, int))
     }
 }
 
+/**
+ * @brief Sets all elements of the matrix using an array of values.
+ * 
+ * @param A the matrix to be set
+ * @param elements the elements
+ * @param mode either ROW_MAJOR or COLUMN_MAJOR
+ */
 void set_matrix_by_line(Matrix A, elem_t *elements, char mode)
 {
     check_null(A);
@@ -112,6 +162,13 @@ void set_matrix_by_line(Matrix A, elem_t *elements, char mode)
     }
 }
 
+/**
+ * @brief Sets elements of one row in a matrix using an array of values.
+ * 
+ * @param A the matrix to be set
+ * @param r the row to be set (index from 0)
+ * @param rowvals the values
+ */
 void set_matrix_row(Matrix A, int r, elem_t *rowvals)
 {
     int c = A->cols;
@@ -121,6 +178,13 @@ void set_matrix_row(Matrix A, int r, elem_t *rowvals)
     }
 }
 
+/**
+ * @brief Sets elements of one column in a matrix using an array of values.
+ * 
+ * @param A the matrix to be set
+ * @param r the column to be set (index from 0)
+ * @param colvals the values
+ */
 void set_matrix_column(Matrix A, int c, elem_t *colvals)
 {
     int r = A->rows;
@@ -130,7 +194,13 @@ void set_matrix_column(Matrix A, int c, elem_t *colvals)
     }
 }
 
-
+/**
+ * @brief Extracts a row matrix from a matrix.
+ * 
+ * @param A the matrix
+ * @param c the row number (index from 0)
+ * @return Matrix: the row matrix
+ */
 Matrix get_row_matrix(Matrix A, int r)
 {
     int c = A->cols;
@@ -143,6 +213,13 @@ Matrix get_row_matrix(Matrix A, int r)
     return row;
 }
 
+/**
+ * @brief Extracts a column matrix from a matrix.
+ * 
+ * @param A the matrix
+ * @param c the column number (index from 0)
+ * @return Matrix: the column matrix
+ */
 Matrix get_column_matrix(Matrix A, int c)
 {
     int r = A->rows;
@@ -155,11 +232,23 @@ Matrix get_column_matrix(Matrix A, int c)
     return col;
 }
 
+/**
+ * @brief Sets all elements of the matrix to 0.
+ * 
+ * @param v the matrix to be cleared
+ */
 void clear_matrix(Matrix A)
 {
     set_matrix_by_value(A, 0);
 }
 
+/**
+ * @brief Extracts the elements of a matrix into a 1D element array.
+ * 
+ * @param A the matrix to be flattened
+ * @param mode either ROW_MAJOR or COLUMN_MAJOR
+ * @return elem_t*: the element array
+ */
 elem_t *flatten(Matrix A, char mode)
 {
     int r=A->rows, c=A->cols;
@@ -192,33 +281,43 @@ elem_t *flatten(Matrix A, char mode)
     return flat;
 }
 
-
+/**
+ * @brief Formats and prints a matrix to the standard output.
+ * 
+ * @param A the matrix to be printed
+ */
 void print_matrix(Matrix A)
 {
     check_null(A);
     int r=A->rows, c=A->cols;
     if (r == 1)
     {
-        printf("( ");
+        fprintf(stdout, "( ");
         print_row(A, 0);
-        printf(" )\n");
+        fprintf(stdout, " )\n");
         return;
     }
 
-    printf("/ ");
+    fprintf(stdout, "/ ");
     print_row(A, 0);
-    printf(" \\\n");
+    fprintf(stdout, " \\\n");
     for (int i = 1; i < r-1; i++)
     {
-        printf("| ");
+        fprintf(stdout, "| ");
         print_row(A, i);
-        printf(" |\n");
+        fprintf(stdout, " |\n");
     }
-    printf("\\ ");
+    fprintf(stdout, "\\ ");
     print_row(A, r-1);
-    printf(" /\n\n");
+    fprintf(stdout, " /\n\n");
 }
 
+/**
+ * @brief Formats and prints a row of a matrix to the standard output.
+ * 
+ * @param A the matrix from which a row is to be printed
+ * @param r the row to be printed
+ */
 void print_row(Matrix A, int r)
 {
     check_null(A);
@@ -226,11 +325,18 @@ void print_row(Matrix A, int r)
 
     for (int i = 0; i < c; i++)
     {
-        printf("%*.*f", ELEMENTWIDTH, ELEMENTPREC, (float) A->elements[r][i]);
-        printf((i == c-1) ? "" : " ");
+        fprintf(stdout, "%*.*f", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, (float) A->elements[r][i]);
+        fprintf(stdout, (i == c-1) ? "" : " ");
     }
 }
 
+/**
+ * @brief Adds 2 matrices.
+ * 
+ * @param A the first matrix
+ * @param B the second matrix
+ * @return Matrix: the sum
+ */
 Matrix add_matrix(Matrix A, Matrix B)
 {
     check_null(A);
@@ -239,7 +345,7 @@ Matrix add_matrix(Matrix A, Matrix B)
     
     if (r1!=r2 || c1!=c2)
     {
-        printf("ERROR (A_add): Arices must be same size.\n");
+        fprintf(stdout, "ERROR (A_add): Arices must be same size.\n");
     }
     Matrix result = new_matrix(r1, c1);
     for (int i = 0; i < r1; i++)
@@ -252,6 +358,13 @@ Matrix add_matrix(Matrix A, Matrix B)
     return result;
 }
 
+/**
+ * @brief Multiplies 2 matrices.
+ * 
+ * @param A the first matrix
+ * @param B the second matrix
+ * @return Matrix: the product
+ */
 Matrix multiply_matrix(Matrix A, Matrix B)
 {
     check_null(A);
@@ -297,12 +410,12 @@ void scale_matrix(Matrix A, elem_t n)
 }
 
 /**
- * @brief Raises a square matrix to an arbitrary integer pattern.
+ * @brief Raises a square matrix to an arbitrary integer power.
  * 
- * @param A the base of the power
+ * @param A the matrix base of the power
  * @param pow the power for A to be raised. If 0, then the identity is returned.
  * If <0, then we take the power of inv(A) instead.
- * @return the resultant matrix
+ * @return Matrix: the resultant matrix
  */
 Matrix matrix_power(Matrix A, int pow)
 {
@@ -329,12 +442,12 @@ Matrix matrix_power(Matrix A, int pow)
 }
 
 /**
- * @brief Transposes a matrix.
+ * @brief Computes the transpose of a matrix.
  * 
- * @param A the matrix to be trasnposed
- * @return A^T
+ * @param A the matrix
+ * @return Matrix: the transpose
  */
-Matrix transpose(const Matrix A)
+Matrix transpose(Matrix A)
 {
     int r=A->rows, c=A->cols;
     Matrix result = new_matrix(c, r);
@@ -350,10 +463,10 @@ Matrix transpose(const Matrix A)
 }
 
 /**
- * @brief Inverts a square matrix.
+ * @brief Computes the inverse of a square matrix.
  * 
- * @param A the matrix to be inverted
- * @return the inverted matrix
+ * @param A the matrix
+ * @return Matrix: the inverse
  */
 Matrix inverse(Matrix A)
 {
@@ -396,7 +509,14 @@ Matrix inverse(Matrix A)
     return I;
 }
 
-Matrix append_horizontal(const Matrix A, const Matrix B)
+/**
+ * @brief Appends two matrices horizontally.
+ * 
+ * @param A the left matrix
+ * @param B the right matrix
+ * @return Matrix: the result
+ */
+Matrix append_horizontal(Matrix A, Matrix B)
 {
     int Acols=A->cols, Arows=A->rows, Bcols=B->cols, Brows=B->rows;
     int Mrows=Arows, Mcols=Acols+Bcols;
@@ -417,6 +537,42 @@ Matrix append_horizontal(const Matrix A, const Matrix B)
     return M;
 }
 
+/**
+ * @brief Checks if a matrix is orthogonal
+ * 
+ * @param A the matrix
+ * @return int: 1 if A is orthogonal, 0 if not
+ */
+int is_orthogonal(Matrix A)
+{
+    if (A->rows != A->cols)
+    {
+        return 0;
+    }
+    Matrix At = transpose(A);
+    return matrix_is_equal(identity(A->cols), multiply_matrix(A, At));
+}
+
+int is_symmetric(Matrix A)
+{
+    if (A->rows != A->cols)
+    {
+        return 0;
+    }
+    return matrix_is_equal(transpose(A), A);
+}
+
+
+/*
+--------------------------- VECTOR FUNCTIONS BELOW -----------------------------
+*/
+
+/**
+ * @brief Allocates memory for a new vector.
+ * 
+ * @param d the dimension of the new vector
+ * @return Vector: the new vector
+ */
 Vector new_vector(int d)
 {
     Vector v = (Vector) malloc(sizeof(struct VecTor));
@@ -427,6 +583,12 @@ Vector new_vector(int d)
     return v;
 }
 
+/**
+ * @brief Allocates memory for a new vector, and copies the old vector to it.
+ * 
+ * @param A the vector to be copied
+ * @return Vector: the copy
+ */
 Vector copy_vector(Vector v)
 {
     int d = v->dim;
@@ -438,22 +600,38 @@ Vector copy_vector(Vector v)
     }
 }
 
-int compare_vector(Vector v, Vector w)
+/**
+ * @brief Compares two vectors.
+ * 
+ * @param v the first vector
+ * @param w the second vector
+ * @return int: 1 if the vectors have equal dimension and elements, 0 if not
+ */
+int vector_is_equal(Vector v, Vector w)
 {
-    check_equal_dimension(v, w);
+    if (v->dim != w->dim)
+    {
+        return 0;
+    }
     int d = v->dim;
     
     for (int i = 0; i < d; i++)
     {
-        if (!nearly_zero(v->elements[d] - w->elements[d]))
+        if (!nearly_zero(v->elements[i] - w->elements[i]))
         {
-            return 1;
+            return 0;
         }
     }
-    return 0;
+    return 1;
 }
 
-void set_vector_by_value(Vector v, const elem_t e)
+/**
+ * @brief Sets all elements of a vector to be a constant value.
+ * 
+ * @param v the vector to be set
+ * @param e the value
+ */
+void set_vector_by_value(Vector v, elem_t e)
 {
     int d = v->dim;
     for (int i = 0; i < d; i++)
@@ -462,6 +640,12 @@ void set_vector_by_value(Vector v, const elem_t e)
     }
 }
 
+/**
+ * @brief Sets all elements of the vector with a custom function.
+ * 
+ * @param v the vector to be set
+ * @param gen the function, takes one argument (the index of the current element)
+ */
 void set_vector_by_function(Vector v, elem_t (*gen)(int))
 {
     check_null(v);
@@ -473,6 +657,12 @@ void set_vector_by_function(Vector v, elem_t (*gen)(int))
     }
 }
 
+/**
+ * @brief Sets elements of the vector with an array
+ * 
+ * @param v the vector to be set
+ * @param elements the element array
+ */
 void set_vector(Vector v, elem_t *elements)
 {
     check_null(v);
@@ -484,11 +674,21 @@ void set_vector(Vector v, elem_t *elements)
     }
 }
 
+/**
+ * @brief Sets all elements of the vector to 0.
+ * 
+ * @param v the vector to be cleared
+ */
 void clear_vector(Vector v)
 {
     set_vector_by_value(v, 0);
 }
 
+/**
+ * @brief Formats and prints a vector onto the standard output.
+ * 
+ * @param v the vector to be printed
+ */
 void print_vector(Vector v)
 {
     check_null(v);
@@ -496,17 +696,24 @@ void print_vector(Vector v)
 
     if (d == 1)
     {
-        printf("(%*.*f)\n", ELEMENTWIDTH, ELEMENTPREC, v->elements[0]);
+        fprintf(stdout, "(%*.*f)\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
         return;
     }
-    printf("/%*.*f\\\n", ELEMENTWIDTH, ELEMENTPREC, v->elements[0]);
+    fprintf(stdout, "/%*.*f\\\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
     for (int i = 1; i < d-1; i++)
     {
-        printf("|%*.*f|\n", ELEMENTWIDTH, ELEMENTPREC, v->elements[i]);
+        fprintf(stdout, "|%*.*f|\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[i]);
     }
-    printf("\\%*.*f/\n", ELEMENTWIDTH, ELEMENTPREC, v->elements[d-1]);
+    fprintf(stdout, "\\%*.*f/\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[d-1]);
 }
 
+/**
+ * @brief Adds 2 vectors.
+ * 
+ * @param v the first vector
+ * @param w the second vector
+ * @return the sum
+ */
 Vector add_vector(Vector v, Vector w)
 {
     check_equal_dimension(v, w);
@@ -519,6 +726,13 @@ Vector add_vector(Vector v, Vector w)
     }
 }
 
+/**
+ * @brief Multiplies a matrix by a vector, in the form Ax.
+ * 
+ * @param A the matrix to be multiplied
+ * @param v the vector to be multipled
+ * @return the product
+ */
 Vector multiply_matrix_vector(Matrix A, Vector v)
 {
     check_null(A);
@@ -526,6 +740,12 @@ Vector multiply_matrix_vector(Matrix A, Vector v)
     return matrix_to_vector(multiply_matrix(A, vector_to_column_matrix(v)));
 }
 
+/**
+ * @brief Multiplies a vector by a scalar constant in place.
+ * 
+ * @param v the vector to be multiplied
+ * @param k the scaling factor
+ */
 void scale_vector(Vector v, elem_t k)
 {
     check_null(v);
@@ -537,7 +757,13 @@ void scale_vector(Vector v, elem_t k)
     }
 }
 
-elem_t vector_length(const Vector v)
+/**
+ * @brief Computes the length (norm) of a vector
+ * 
+ * @param v the vector
+ * @return the length
+ */
+elem_t vector_length(Vector v)
 {
     check_null(v);
     int d = v->dim;
@@ -553,9 +779,10 @@ elem_t vector_length(const Vector v)
 /**
  * @brief Normalizes a vector in place.
  * 
- * @param v the vector to be normalized
+ * @param v the vector
+ * @return elem_t: the length
  */
-void normalize(Vector v)
+elem_t normalize(Vector v)
 {
     check_null(v);
     int d = v->dim;
@@ -564,6 +791,24 @@ void normalize(Vector v)
     for (int i = 0; i < d; i++)
     {
         v->elements[i] /= length;
+    }
+    return length;
+}
+
+/**
+ * @brief Normalizes the columns of a matrix in place
+ * 
+ * @param A the matrix
+*/
+void normalize_columns(Matrix A)
+{
+    int c=A->cols;
+    Vector col = NULL;
+    for (int i = 0; i < c; i++)
+    {
+        col = get_column_vector(A, 0);
+        normalize(col);
+        set_matrix_column(A, i, col->elements);
     }
 }
 
@@ -618,6 +863,12 @@ Vector cross_product(Vector v, Vector w)
     }
 }
 
+/**
+ * @brief Converts a vector to a row matrix.
+ * 
+ * @param v the vector to be converted
+ * @return the corresponding matrix
+ */
 Matrix vector_to_row_matrix(Vector v)
 {
     int d = v->dim;
@@ -630,6 +881,12 @@ Matrix vector_to_row_matrix(Vector v)
     return row;
 }
 
+/**
+ * @brief Converts a vector to a column matrix.
+ * 
+ * @param v the vector to be converted
+ * @return the corresponding matrix
+ */
 Matrix vector_to_column_matrix(Vector v)
 {
     int d = v->dim;
@@ -642,32 +899,63 @@ Matrix vector_to_column_matrix(Vector v)
     return column;
 }
 
+/**
+ * @brief Converts a matrix to a vector.
+ * 
+ * @param A the matrix to be converted, can be either 1xn or nx1
+ * @return the corresponding vector
+ */
 Vector matrix_to_vector(Matrix A)
 {
     check_null(A);
-    int r=A->rows;
-    Vector v = new_vector(r);
-
-    for (int i = 0; i < r; i++)
+    int r=A->rows, c=A->cols;
+    if (c == 1)
     {
-        v->elements[i] = A->elements[i][0];
+        Vector v = new_vector(r);
+        for (int i = 0; i < r; i++)
+        {
+            v->elements[i] = A->elements[i][0];
+        }
+        return v;
     }
-    return v;
+    else
+    {
+        Vector v = new_vector(c);
+        for (int i = 0; i < c; i++)
+        {
+            v->elements[i] = A->elements[0][c];
+        }
+        return v;
+    }
 }
 
+/**
+ * @brief Extracts a row vector from a matrix
+ * 
+ * @param A the matrix
+ * @param r the row number (index from 0)
+ * @return the row vector
+ */
 Vector get_row_vector(Matrix A, int r)
 {
     check_null(A);
     int c = A->cols;
-    Vector col = new_vector(c);
+    Vector row = new_vector(c);
     
     for (int i = 0; i < c; i++)
     {
-        col->elements[i] = A->elements[i][r];
+        row->elements[i] = A->elements[r][i];
     }
-    return col;
+    return row;
 }
 
+/**
+ * @brief Extracts a column vector from a matrix.
+ * 
+ * @param A the matrix
+ * @param c the column number (index from 0)
+ * @return the column vector
+ */
 Vector get_column_vector(Matrix A, int c)
 {
     check_null(A);
@@ -681,6 +969,12 @@ Vector get_column_vector(Matrix A, int c)
     return col;
 }
 
+/**
+ * @brief Generates an identity matrix.
+ * 
+ * @param d the size of the identity
+ * @return the identity
+ */
 Matrix identity(int d)
 {
     Matrix iden = new_matrix(d, d);
@@ -696,7 +990,7 @@ Matrix identity(int d)
  * 
  * @param dim the dimension of the unit vector
  * @param n the index of the unit vector, ie. which column of the identity it is. 
- * @return the unit vector.
+ * @return the unit vector
  */
 Vector std_unit_vector(int dim, int n)
 {

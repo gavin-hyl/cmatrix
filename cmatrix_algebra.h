@@ -11,8 +11,6 @@ elem_t row_echelon_form(Matrix);
 elem_t determinant(Matrix);
 Vector solve_linear_system(Matrix, Vector);
 Matrix basis_transform(Matrix, Matrix);
-Matrix *qr_decomposition(Matrix);
-Matrix eigenvectors(Matrix);
-elem_t *eigenvalues(Matrix);
+int linear_independence(Vector *, int);
 
 #endif
