@@ -12,6 +12,12 @@
 
 #include "cmatrix_defs.h"
 
+#define ex2 std_unit_vector(2, 0)
+#define ey2 std_unit_vector(2, 1)
+#define ex3 std_unit_vector(3, 0)
+#define ey3 std_unit_vector(3, 1)
+#define ez3 std_unit_vector(3, 2)
+
 Matrix new_matrix(int, int);
 void free_matrix(Matrix);
 Matrix copy_matrix(Matrix);

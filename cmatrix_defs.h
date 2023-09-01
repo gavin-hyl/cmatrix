@@ -13,17 +13,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define ELEMENT_PRINT_WIDTH 7
-#define ELEMENT_PRINT_PRECISION 2
-#define EPSILON 1e-5
-#define QR_ITER 20
-#define QR_CHECK_PERIOD 10
+#define ELEMENT_PRINT_WIDTH 7       // width of elements in print_matrix and print_vector
+#define ELEMENT_PRINT_PRECISION 2   // precision of elements in print_matrix and print_vector
+#define EPSILON 1e-5                // the upper limit of what two floating points are considered equal
+#define QR_ITER 20                  // maximum iterations of the QR algorithm.
+#define QR_CHECK_PERIOD 10          // determines how often the matrix is checked to be upper-triangular in the QR algorithm.
 
 
 // The floating-point type that is used in calculations. 
 // Must either be double or float, NOT LONG DOUBLE, for maximum portability.
 typedef double flt_t;  
-#define nearly_zero(e) ((e)==0)
+#define nearly_zero(e) ((e)<=EPSILON && (e)>=EPSILON*-1)
 
 typedef struct MaTrix {
     int rows;
@@ -37,12 +37,6 @@ typedef struct VecTor {
     int dim;
     flt_t *elements;
 } *Vector;
-
-#define ex2 std_unit_vector(2, 0)
-#define ey2 std_unit_vector(2, 1)
-#define ex3 std_unit_vector(3, 0)
-#define ey3 std_unit_vector(3, 1)
-#define ez3 std_unit_vector(3, 2)
 
 /**
  * A series of error-checking macros are defined here as well.
