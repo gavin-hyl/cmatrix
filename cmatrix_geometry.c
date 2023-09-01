@@ -1,3 +1,12 @@
+/**
+ * @file cmatrix_geometry.c
+ * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
+ * @brief Implementation of cmatrix_geometry.h
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include <math.h>
 #include <string.h>
 #include "cmatrix_basics.h"
@@ -9,7 +18,7 @@
  * @param angle the angle to rotate 
  * @return the rotation matrix
 */
-Matrix rotation_matrix_2d(const elem_t angle)
+Matrix rotation_matrix_2d(const flt_t angle)
 {
     Matrix mat = new_matrix(2, 2);
     
@@ -27,15 +36,15 @@ Matrix rotation_matrix_2d(const elem_t angle)
  * @param theta the rotation angle
  * @return the rotation matrix
  */
-Matrix rotation_matrix_3d(const Vector axis, const elem_t theta)
+Matrix rotation_matrix_3d(const Vector axis, const flt_t theta)
 {
     normalize(axis);
-    elem_t ux=axis->elements[0], uy=axis->elements[1], uz=axis->elements[2];
-    elem_t c=cos(theta), s=sin(theta);
+    flt_t ux=axis->elements[0], uy=axis->elements[1], uz=axis->elements[2];
+    flt_t c=cos(theta), s=sin(theta);
     Matrix rot_3d = new_matrix(3, 3);
-    set_matrix_row(rot_3d, 0, (elem_t []) {c + ux*ux*(1-c), ux*uy*(1-c) - uz*s, ux*uz*(1-c) + uy*s});
-    set_matrix_row(rot_3d, 1, (elem_t []) {ux*uy*(1-c) + uz*s, c + uy*uy*(1-c), uy*uz*(1-c) - ux*s});
-    set_matrix_row(rot_3d, 2, (elem_t []) {ux*uz*(1-c) - uz*s, uy*uz*(1-c) + ux*s, c + uz*uz*(1-c)});
+    set_matrix_row(rot_3d, 0, (flt_t []) {c + ux*ux*(1-c), ux*uy*(1-c) - uz*s, ux*uz*(1-c) + uy*s});
+    set_matrix_row(rot_3d, 1, (flt_t []) {ux*uy*(1-c) + uz*s, c + uy*uy*(1-c), uy*uz*(1-c) - ux*s});
+    set_matrix_row(rot_3d, 2, (flt_t []) {ux*uz*(1-c) - uz*s, uy*uz*(1-c) + ux*s, c + uz*uz*(1-c)});
     return rot_3d;
 }
 
@@ -89,7 +98,7 @@ Vector unit_normal(const Vector v, const Vector w)
  * @param phi the angle between the vector and the x-axis
  * @return the resultant vector in the standard orthonormal basis
  */
-Vector polar_to_cartesian(const elem_t r, const elem_t phi)
+Vector polar_to_cartesian(const flt_t r, const flt_t phi)
 {
     Vector v = new_vector(2);
     v->elements[0] = r * cos(phi);
@@ -105,7 +114,7 @@ Vector polar_to_cartesian(const elem_t r, const elem_t phi)
  * @param theta the angle between the vector and the z-axis
  * @return the resultant vector in the standard orthonormal basis
  */
-Vector spherical_to_cartesian(const elem_t r, const elem_t phi, const elem_t theta)
+Vector spherical_to_cartesian(const flt_t r, const flt_t phi, const flt_t theta)
 {
     Vector v = new_vector(3);
     v->elements[0] = r * sin(theta) * cos(phi);
@@ -122,7 +131,7 @@ Vector spherical_to_cartesian(const elem_t r, const elem_t phi, const elem_t the
  * @param z the z-component of the point
  * @return the resultant vector in the standard orthonormal basis
  */
-Vector cylindrical_to_cartesian(const elem_t r, const elem_t phi, const elem_t z)
+Vector cylindrical_to_cartesian(const flt_t r, const flt_t phi, const flt_t z)
 {
     Vector v = new_vector(3);
     v->elements[0] = r * cos(phi);
@@ -139,7 +148,7 @@ Vector cylindrical_to_cartesian(const elem_t r, const elem_t phi, const elem_t z
  * @param angles the rotation angles, must be in the same order specified by mode
  * @return the rotation matrix
  */
-Matrix attitude_description(char *mode, elem_t *angles)
+Matrix attitude_description(char *mode, flt_t *angles)
 {
     int axis;
     Matrix attitude = identity(3);

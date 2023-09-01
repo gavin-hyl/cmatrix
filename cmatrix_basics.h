@@ -1,8 +1,7 @@
 /**
  * @file cmatrix_basics.h
  * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
- * @brief Functions for creating and initializing matrices and vectors. Also
- * include basic operations for these objects.
+ * @brief Basic unctions for creating and manipulating matrices and vectors.
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -17,20 +16,20 @@ Matrix new_matrix(int, int);
 void free_matrix(Matrix);
 Matrix copy_matrix(Matrix);
 int matrix_is_equal(Matrix, Matrix);
-void set_matrix_by_value(Matrix, elem_t);
-void set_matrix_by_function(Matrix, elem_t (*)(int, int));
-void set_matrix_by_line(Matrix, elem_t *, char);
-void set_matrix_row(Matrix, int, elem_t *);
-void set_matrix_column(Matrix, int, elem_t *);
+void set_matrix_by_value(Matrix, flt_t);
+void set_matrix_by_function(Matrix, flt_t (*)(int, int));
+void set_matrix_by_line(Matrix, flt_t *, char);
+void set_matrix_row(Matrix, int, flt_t *);
+void set_matrix_column(Matrix, int, flt_t *);
 Matrix get_row_matrix(Matrix, int);
 Matrix get_column_matrix(Matrix, int);
 void clear_matrix(Matrix);
-elem_t *flatten(Matrix, char);
+flt_t *flatten(Matrix, char);
 void print_matrix(Matrix);
 void print_row(Matrix, int);
 Matrix add_matrix(Matrix, Matrix);
 Matrix multiply_matrix(Matrix, Matrix);
-Matrix scale_matrix(Matrix, elem_t);
+Matrix scale_matrix(Matrix, flt_t);
 Matrix matrix_power(Matrix, int);
 Matrix transpose(Matrix);
 Matrix inverse(Matrix);
@@ -45,18 +44,18 @@ Vector new_vector(int);
 void free_vector(Vector);
 Vector copy_vector(Vector);
 int vector_is_equal(Vector, Vector);
-void set_vector_by_value(Vector, elem_t);
-void set_vector_by_function(Vector, elem_t (*)(int));
-void set_vector(Vector, elem_t *);
+void set_vector_by_value(Vector, flt_t);
+void set_vector_by_function(Vector, flt_t (*)(int));
+void set_vector(Vector, flt_t *);
 void clear_vector(Vector);
 void print_vector(Vector);
 Vector add_vector(Vector, Vector);
 Vector multiply_matrix_vector(Matrix, Vector);
-Vector scale_vector(Vector, elem_t);
-elem_t norm(Vector);
-elem_t normalize(Vector);
+Vector scale_vector(Vector, flt_t);
+flt_t norm(Vector);
+flt_t normalize(Vector);
 void normalize_columns(Matrix A);
-elem_t dot_product(Vector, Vector);
+flt_t dot_product(Vector, Vector);
 Vector cross_product(Vector, Vector);
 
 Matrix vector_to_row_matrix(Vector);

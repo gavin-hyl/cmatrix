@@ -25,10 +25,10 @@ Matrix new_matrix(int r, int c)
 
     A->rows = r;
     A->cols = c;
-    A->elements = (elem_t **) calloc(r, sizeof(elem_t *));
+    A->elements = (flt_t **) calloc(r, sizeof(flt_t *));
     for (int i = 0; i < r; i++)
     {
-        A->elements[i] = (elem_t *) calloc(c, sizeof(elem_t));
+        A->elements[i] = (flt_t *) calloc(c, sizeof(flt_t));
     }
     return A;
 }
@@ -107,7 +107,7 @@ int matrix_is_equal(Matrix A, Matrix B)
  * @param A the matrix
  * @param val the value
  */
-void set_matrix_by_value(Matrix A, elem_t val)
+void set_matrix_by_value(Matrix A, flt_t val)
 {
     check_null(A);
     int r=A->rows, c=A->cols;
@@ -127,7 +127,7 @@ void set_matrix_by_value(Matrix A, elem_t val)
  * @param A the matrix to be set
  * @param gen the function, takes two arguments (the row and column of the current element)
  */
-void set_matrix_by_function(Matrix A, elem_t (*gen)(int, int))
+void set_matrix_by_function(Matrix A, flt_t (*gen)(int, int))
 {
     check_null(A);
     int r=A->rows, c=A->cols;
@@ -148,7 +148,7 @@ void set_matrix_by_function(Matrix A, elem_t (*gen)(int, int))
  * @param elements the elements
  * @param mode either ROW_MAJOR or COLUMN_MAJOR
  */
-void set_matrix_by_line(Matrix A, elem_t *elements, char mode)
+void set_matrix_by_line(Matrix A, flt_t *elements, char mode)
 {
     check_null(A);
     int r=A->rows, c=A->cols;
@@ -186,7 +186,7 @@ void set_matrix_by_line(Matrix A, elem_t *elements, char mode)
  * @param r the row to be set (index from 0)
  * @param rowvals the values
  */
-void set_matrix_row(Matrix A, int r, elem_t *rowvals)
+void set_matrix_row(Matrix A, int r, flt_t *rowvals)
 {
     int c = A->cols;
     for (int i = 0; i < c; i++)
@@ -202,7 +202,7 @@ void set_matrix_row(Matrix A, int r, elem_t *rowvals)
  * @param r the column to be set (index from 0)
  * @param colvals the values
  */
-void set_matrix_column(Matrix A, int c, elem_t *colvals)
+void set_matrix_column(Matrix A, int c, flt_t *colvals)
 {
     int r = A->rows;
     for (int i = 0; i < r; i++)
@@ -264,12 +264,12 @@ void clear_matrix(Matrix A)
  * 
  * @param A the matrix to be flattened
  * @param mode either ROW_MAJOR or COLUMN_MAJOR
- * @returns elem_t*: the element array
+ * @returns flt_t*: the element array
  */
-elem_t *flatten(Matrix A, char mode)
+flt_t *flatten(Matrix A, char mode)
 {
     int r=A->rows, c=A->cols;
-    elem_t *flat = (elem_t *) calloc(r*c, sizeof(elem_t));
+    flt_t *flat = (flt_t *) calloc(r*c, sizeof(flt_t));
 
     switch(mode)
     {
@@ -390,7 +390,7 @@ Matrix multiply_matrix(Matrix A, Matrix B)
     int r1=A->rows, c1=A->cols, r2=B->rows, c2=B->cols;
     
     Matrix result = new_matrix(r1, c2);
-    elem_t temp;
+    flt_t temp;
     for (int i = 0; i < r1; i++)
     {   
         for (int j = 0; j < c2; j++)
@@ -411,7 +411,7 @@ Matrix multiply_matrix(Matrix A, Matrix B)
  * @param n the scaling factor
  * @returns Matrix: the scaled matrix
  */
-Matrix scale_matrix(Matrix A, elem_t n)
+Matrix scale_matrix(Matrix A, flt_t n)
 {
     check_null(A);
     Matrix Acpy = copy_matrix(A);
@@ -495,7 +495,7 @@ Matrix inverse(Matrix A)
 
     for (int fd = 0; fd < d; fd++)
     {
-        elem_t fd_scaler = 1 / Acpy->elements[fd][fd];
+        flt_t fd_scaler = 1 / Acpy->elements[fd][fd];
     
         for (int j = 0; j < d; j++)
         {
@@ -505,7 +505,7 @@ Matrix inverse(Matrix A)
 
         for (int i = 0; i < fd; i++)
         {
-            elem_t cr_scaler = Acpy->elements[i][fd];
+            flt_t cr_scaler = Acpy->elements[i][fd];
             for (int j = 0; j < d; j++)
             {
                 Acpy->elements[i][j] -= cr_scaler * Acpy->elements[fd][j];
@@ -515,7 +515,7 @@ Matrix inverse(Matrix A)
 
         for (int i = fd+1; i < d; i++)
         {
-            elem_t cr_scaler = Acpy->elements[i][fd];
+            flt_t cr_scaler = Acpy->elements[i][fd];
             for (int j = 0; j < d; j++)
             {
                 Acpy->elements[i][j] -= cr_scaler * Acpy->elements[fd][j];
@@ -658,9 +658,9 @@ int is_upper_triangular(Matrix A)
     return 1;
 }
 
-/*
---------------------------- VECTOR FUNCTIONS BELOW -----------------------------
-*/
+
+
+
 
 /**
  * @brief Allocates memory for a new vector.
@@ -674,7 +674,7 @@ Vector new_vector(int d)
     check_null(v);
 
     v->dim = d;
-    v->elements = (elem_t *) calloc(d, sizeof(elem_t));
+    v->elements = (flt_t *) calloc(d, sizeof(flt_t));
     return v;
 }
 
@@ -739,7 +739,7 @@ int vector_is_equal(Vector v, Vector w)
  * @param v the vector to be set
  * @param e the value
  */
-void set_vector_by_value(Vector v, elem_t e)
+void set_vector_by_value(Vector v, flt_t e)
 {
     int d = v->dim;
     for (int i = 0; i < d; i++)
@@ -754,7 +754,7 @@ void set_vector_by_value(Vector v, elem_t e)
  * @param v the vector to be set
  * @param gen the function, takes one argument (the index of the current element)
  */
-void set_vector_by_function(Vector v, elem_t (*gen)(int))
+void set_vector_by_function(Vector v, flt_t (*gen)(int))
 {
     check_null(v);
     int d = v->dim;
@@ -771,7 +771,7 @@ void set_vector_by_function(Vector v, elem_t (*gen)(int))
  * @param v the vector to be set
  * @param elements the element array
  */
-void set_vector(Vector v, elem_t *elements)
+void set_vector(Vector v, flt_t *elements)
 {
     check_null(v);
     int d = v->dim;
@@ -856,7 +856,7 @@ Vector multiply_matrix_vector(Matrix A, Vector v)
  * @param k the scaling factor
  * @returns Vector: the scaled vector
  */
-Vector scale_vector(Vector v, elem_t k)
+Vector scale_vector(Vector v, flt_t k)
 {
     check_null(v);
     int d = v->dim;
@@ -874,12 +874,12 @@ Vector scale_vector(Vector v, elem_t k)
  * @param v the vector
  * @returns the length
  */
-elem_t norm(Vector v)
+flt_t norm(Vector v)
 {
     check_null(v);
     int d = v->dim;
 
-    elem_t len_squared = 0;
+    flt_t len_squared = 0;
     for (int i = 0; i < d; i++)
     {
         len_squared += v->elements[i] * v->elements[i];
@@ -891,13 +891,13 @@ elem_t norm(Vector v)
  * @brief Normalizes a vector in place.
  * 
  * @param v the vector
- * @returns elem_t: the length
+ * @returns flt_t: the length
  */
-elem_t normalize(Vector v)
+flt_t normalize(Vector v)
 {
     check_null(v);
     int d = v->dim;
-    elem_t length = norm(v);
+    flt_t length = norm(v);
 
     for (int i = 0; i < d; i++)
     {
@@ -930,11 +930,11 @@ void normalize_columns(Matrix A)
  * @param w the second vector
  * @returns the dot product
  */
-elem_t dot_product(Vector v, Vector w)
+flt_t dot_product(Vector v, Vector w)
 {
     check_equal_dimension(v, w);
     int d = v->dim;
-    elem_t result = 0;
+    flt_t result = 0;
 
     for (int i = 0; i < d; i++)
     {
@@ -956,7 +956,7 @@ Vector cross_product(Vector v, Vector w)
     check_null(w);
     check_equal_dimension(v, w);
     Vector result = new_vector(3);
-    elem_t *ve=v->elements, *we=w->elements;
+    flt_t *ve=v->elements, *we=w->elements;
     
     switch(v->dim)
     {
@@ -1166,7 +1166,7 @@ Vector std_unit_vector(int dim, int n)
 Matrix vector_projection_matrix(Vector v)
 {
     check_null(v);
-    elem_t length = norm(v);
+    flt_t length = norm(v);
     if (nearly_zero(length))
     {
         return identity(v->dim);

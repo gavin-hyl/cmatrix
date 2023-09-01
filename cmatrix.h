@@ -5,11 +5,6 @@
  * 
  * CMatrix - a lightweight linear algebra library for embedded systems.
  * 
- * Includes functions and types for 
- * 1. creating matrices and vectors
- * 2. various linear algebra operations
- * 3. common geometry constructs
- * 
  * @copyright Copyright (c) 2023
  * 
  */

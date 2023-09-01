@@ -1,3 +1,12 @@
+/**
+ * @file cmatrix_defs.h
+ * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
+ * @brief Type definitions, common macros, and configs for the cmatrix library.
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef _CMATRIX_DEFS_H_
 #define _CMATRIX_DEFS_H_
 
@@ -10,21 +19,30 @@
 #define QR_ITER 20
 #define QR_CHECK_PERIOD 10
 
-typedef double elem_t;  // must be either float or double, NOT long double
+
+// The floating-point type that is used in calculations. 
+// Must either be double or float, NOT LONG DOUBLE, for maximum portability.
+typedef double flt_t;  
 #define nearly_zero(e) ((e)==0)
 
 typedef struct MaTrix {
     int rows;
     int cols;
-    elem_t **elements;
+    flt_t **elements;
 } *Matrix;
 
 enum {ROW_MAJOR, COLUMN_MAJOR};
 
 typedef struct VecTor {
     int dim;
-    elem_t *elements;
+    flt_t *elements;
 } *Vector;
+
+#define ex2 std_unit_vector(2, 0)
+#define ey2 std_unit_vector(2, 1)
+#define ex3 std_unit_vector(3, 0)
+#define ey3 std_unit_vector(3, 1)
+#define ez3 std_unit_vector(3, 2)
 
 /**
  * A series of error-checking macros are defined here as well.

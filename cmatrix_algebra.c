@@ -6,6 +6,7 @@
  * @copyright Copyright (c) 2023
  * 
  */
+
 #include <math.h>
 #include "cmatrix_algebra.h"
 #include "cmatrix_basics.h"
@@ -22,7 +23,7 @@ void swap_row(Matrix A, int r1, int r2)
     if (r1 != r2)
     {
         int c = A->cols;
-        elem_t temp;
+        flt_t temp;
         for (int i = 0; i < c; i++)
         {
             temp = A->elements[r1][i];
@@ -39,7 +40,7 @@ void swap_row(Matrix A, int r1, int r2)
  * @param r the row (index from 0)
  * @param k the scaling constant
  */
-void multiply_row(Matrix A, int r, elem_t k)
+void multiply_row(Matrix A, int r, flt_t k)
 {
     if (!nearly_zero(k-1))
     {
@@ -70,41 +71,64 @@ void combine_row(Matrix A, int fr, int to)
     }
 }
 
-// UNUSED - probably useless
-// Matrix row_combine_matrix(int d, int fr, int to)
-// {
-//     Matrix combrow = identity(d);
-//     combrow->elements[to][fr] = 1;
-//     return combrow;
-// }
+/**
+ * @brief Gaussian elimination matrix that swaps two rows.
+ * 
+ * @param d dimension of the matrix
+ * @param r1 the first row
+ * @param r2 the second row
+ * @return Matrix: the row swap matrix
+ */
+Matrix row_swap_matrix(int d, int r1, int r2)
+{
+    Matrix swaprow = identity(d);
+    swaprow->elements[r1][r1] = 0;
+    swaprow->elements[r2][r2] = 0;
+    swaprow->elements[r1][r2] = 1;
+    swaprow->elements[r2][r1] = 1;
+    return swaprow;
+}
 
-// Matrix row_swap_matrix(int d, int r1, int r2)
-// {
-//     Matrix swaprow = identity(d);
-//     swaprow->elements[r1][r1] = 0;
-//     swaprow->elements[r2][r2] = 0;
-//     swaprow->elements[r1][r2] = 1;
-//     swaprow->elements[r2][r1] = 1;
-//     return swaprow;
-// }
+/**
+ * @brief Gaussian elimination matrix that multiplies one row by a scalar.
+ * 
+ * @param d dimension of the matrix
+ * @param r the row
+ * @param mult the scalar
+ * @return Matrix: the row multiplication matrix
+ */
+Matrix row_multiply_matrix(int d, int r, flt_t mult)
+{
+    Matrix multrow = identity(d);
+    multrow->elements[r][r] = mult;
+    return multrow;
+}
 
-// Matrix row_multiply_matrix(int d, int r, elem_t mult)
-// {
-//     Matrix multrow = identity(d);
-//     multrow->elements[r][r] = mult;
-//     return multrow;
-// }
+/**
+ * @brief Gaussian elimination matrix that combines two rows. 
+ * 
+ * @param d dimension of the matrix
+ * @param fr this row will be added to "to"
+ * @param to the row that fr will be added to
+ * @return Matrix: the row combination matrix
+ */
+Matrix row_combine_matrix(int d, int fr, int to)
+{
+    Matrix combrow = identity(d);
+    combrow->elements[to][fr] = 1;
+    return combrow;
+}
 
 /**
  * @brief Reduces A to row-echelon form in place using Gaussian elimination.
  * 
  * @param A the matrix to be reduced
- * @return elem_t: the new determinant divided by the old. 
+ * @return flt_t: the new determinant divided by the old (to be used in det calculations)
 */
-elem_t row_echelon_form(Matrix A)
+flt_t row_echelon_form(Matrix A)
 {
     register int r=A->rows, c=A->cols, i, j;
-    elem_t result=1, factor;
+    flt_t result=1, factor;
     for (i = 0; i < c; i++)
     {
         for (j = i; j<r && nearly_zero(A->elements[j][i]); j++) ;  // j<r must be put in front
@@ -133,13 +157,13 @@ elem_t row_echelon_form(Matrix A)
  * and multipling the elements on the diagonal of the row-echelon form matrix.
  * 
  * @param A the matrix of which determinant is to be calculated
- * @return elem_t: the determinant
+ * @return flt_t: the determinant
  */
-elem_t determinant(Matrix A)
+flt_t determinant(Matrix A)
 {
     check_square(A);
     int r = A->rows;
-    elem_t determinant = 1;
+    flt_t determinant = 1;
     Matrix Acpy = copy_matrix(A);
 
     if (r == 2)
@@ -166,7 +190,7 @@ elem_t determinant(Matrix A)
 Vector solve_linear_system(const Matrix A, const Vector b)
 {
     register int d=A->cols, i, j;
-    elem_t factor, pivot;
+    flt_t factor, pivot;
     Matrix Aug = append_horizontal(A, vector_to_column_matrix(b));
 
     for (i = 0; i < d; i++)
