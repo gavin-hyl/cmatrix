@@ -6,10 +6,12 @@
 
 #define ELEMENT_PRINT_WIDTH 7
 #define ELEMENT_PRINT_PRECISION 2
+#define EPSILON 1e-5
+#define QR_ITER 20
+#define QR_CHECK_PERIOD 10
 
-#define EPSILON 0.01
 typedef double elem_t;  // must be either float or double, NOT long double
-#define nearly_zero(e) (abs(e)<EPSILON)
+#define nearly_zero(e) ((e)==0)
 
 typedef struct MaTrix {
     int rows;

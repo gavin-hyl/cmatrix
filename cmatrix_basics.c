@@ -16,7 +16,7 @@
  * 
  * @param r the rows of the matrix
  * @param c the columns of the matrix
- * @return Matrix: the new matrix
+ * @returns Matrix: the new matrix
  */
 Matrix new_matrix(int r, int c)
 {
@@ -34,10 +34,27 @@ Matrix new_matrix(int r, int c)
 }
 
 /**
+ * @brief Frees a matrix from memory.
+ * 
+ * @param A the matrix
+ */
+void free_matrix(Matrix A)
+{
+    check_null(A);
+    int r = A->rows;
+    for (int i = 0; i < r; i++)
+    {
+        free(A->elements[i]);
+    }
+    free(A->elements);
+    free(A);
+}
+
+/**
  * @brief Allocates memory for a new matrix, and copies the old matrix to it.
  * 
  * @param A the matrix to be copied
- * @return Matrix: the copy
+ * @returns Matrix: the copy
  */
 Matrix copy_matrix(Matrix A)
 {
@@ -59,7 +76,7 @@ Matrix copy_matrix(Matrix A)
  * 
  * @param A the first matrix.
  * @param B the second matrix.
- * @return int: 1 if they have the same size and same element values, 0 if not.
+ * @returns int: 1 if they have the same size and same element values, 0 if not.
  */
 int matrix_is_equal(Matrix A, Matrix B)
 {
@@ -199,7 +216,7 @@ void set_matrix_column(Matrix A, int c, elem_t *colvals)
  * 
  * @param A the matrix
  * @param c the row number (index from 0)
- * @return Matrix: the row matrix
+ * @returns Matrix: the row matrix
  */
 Matrix get_row_matrix(Matrix A, int r)
 {
@@ -218,7 +235,7 @@ Matrix get_row_matrix(Matrix A, int r)
  * 
  * @param A the matrix
  * @param c the column number (index from 0)
- * @return Matrix: the column matrix
+ * @returns Matrix: the column matrix
  */
 Matrix get_column_matrix(Matrix A, int c)
 {
@@ -247,7 +264,7 @@ void clear_matrix(Matrix A)
  * 
  * @param A the matrix to be flattened
  * @param mode either ROW_MAJOR or COLUMN_MAJOR
- * @return elem_t*: the element array
+ * @returns elem_t*: the element array
  */
 elem_t *flatten(Matrix A, char mode)
 {
@@ -335,7 +352,7 @@ void print_row(Matrix A, int r)
  * 
  * @param A the first matrix
  * @param B the second matrix
- * @return Matrix: the sum
+ * @returns Matrix: the sum
  */
 Matrix add_matrix(Matrix A, Matrix B)
 {
@@ -345,7 +362,7 @@ Matrix add_matrix(Matrix A, Matrix B)
     
     if (r1!=r2 || c1!=c2)
     {
-        fprintf(stdout, "ERROR (A_add): Arices must be same size.\n");
+        fprintf(stdout, "ERROR (A_add): Matrices must be same size.\n");
     }
     Matrix result = new_matrix(r1, c1);
     for (int i = 0; i < r1; i++)
@@ -363,7 +380,7 @@ Matrix add_matrix(Matrix A, Matrix B)
  * 
  * @param A the first matrix
  * @param B the second matrix
- * @return Matrix: the product
+ * @returns Matrix: the product
  */
 Matrix multiply_matrix(Matrix A, Matrix B)
 {
@@ -378,12 +395,10 @@ Matrix multiply_matrix(Matrix A, Matrix B)
     {   
         for (int j = 0; j < c2; j++)
         {   
-            temp = 0;
             for (int k = 0; k < c1; k++)
             {
-                temp += A->elements[i][k] * B->elements[k][j];
+                result->elements[i][j] += A->elements[i][k] * B->elements[k][j];
             }
-            result->elements[i][j] = temp;
         }
     }
     return result;
@@ -392,9 +407,9 @@ Matrix multiply_matrix(Matrix A, Matrix B)
 /**
  * @brief Scales a matrix with a scalar
  * 
- * @param A the matrix to be scaled
+ * @param A the matrix
  * @param n the scaling factor
- * @return Matrix: the scaled matrix
+ * @returns Matrix: the scaled matrix
  */
 Matrix scale_matrix(Matrix A, elem_t n)
 {
@@ -418,7 +433,7 @@ Matrix scale_matrix(Matrix A, elem_t n)
  * @param A the matrix base of the power
  * @param pow the power for A to be raised. If 0, then the identity is returned.
  * If <0, then we take the power of inv(A) instead.
- * @return Matrix: the resultant matrix
+ * @returns Matrix: the resultant matrix
  */
 Matrix matrix_power(Matrix A, int pow)
 {
@@ -448,7 +463,7 @@ Matrix matrix_power(Matrix A, int pow)
  * @brief Computes the transpose of a matrix.
  * 
  * @param A the matrix
- * @return Matrix: the transpose
+ * @returns Matrix: the transpose
  */
 Matrix transpose(Matrix A)
 {
@@ -469,7 +484,7 @@ Matrix transpose(Matrix A)
  * @brief Computes the inverse of a square matrix.
  * 
  * @param A the matrix
- * @return Matrix: the inverse
+ * @returns Matrix: the inverse
  */
 Matrix inverse(Matrix A)
 {
@@ -517,7 +532,7 @@ Matrix inverse(Matrix A)
  * 
  * @param A the left matrix
  * @param B the right matrix
- * @return Matrix: the result
+ * @returns Matrix: the result
  */
 Matrix append_horizontal(Matrix A, Matrix B)
 {
@@ -540,6 +555,14 @@ Matrix append_horizontal(Matrix A, Matrix B)
     return M;
 }
 
+/**
+ * @brief Set the submatrix object
+ * 
+ * @param A 
+ * @param a 
+ * @param r1 
+ * @param c1 
+ */
 void set_submatrix(Matrix A, Matrix a, int r1, int c1)
 {
     int r=a->rows, c=a->cols, R=A->rows, C=A->cols;
@@ -565,7 +588,7 @@ void set_submatrix(Matrix A, Matrix a, int r1, int c1)
  * @param c1 
  * @param r2 
  * @param c2 
- * @return Matrix 
+ * @returns Matrix 
  */
 Matrix get_submatrix(Matrix A, int r1, int c1, int r2, int c2)
 {
@@ -582,10 +605,10 @@ Matrix get_submatrix(Matrix A, int r1, int c1, int r2, int c2)
 }
 
 /**
- * @brief Checks if a matrix is orthogonal
+ * @brief Checks if a matrix is orthogonal.
  * 
  * @param A the matrix
- * @return int: 1 if A is orthogonal, 0 if not
+ * @returns int: 1 if A is orthogonal, 0 if not
  */
 int is_orthogonal(Matrix A)
 {
@@ -598,10 +621,10 @@ int is_orthogonal(Matrix A)
 }
 
 /**
- * @brief Checks if a matrix is symmetric
+ * @brief Checks if a matrix is symmetric.
  * 
  * @param A the matrix
- * @return int: 1 if A is symmetric, 0 if not
+ * @returns int: 1 if A is symmetric, 0 if not
  */
 int is_symmetric(Matrix A)
 {
@@ -612,6 +635,28 @@ int is_symmetric(Matrix A)
     return matrix_is_equal(transpose(A), A);
 }
 
+/**
+ * @brief Checks if a matrix is upper triangular.
+ * 
+ * @param A the matrix
+ * @return int: 1 if A is upper triangular, 0 if not
+ */
+int is_upper_triangular(Matrix A)
+{
+    int r=A->rows, c=A->cols;
+    int d = (r > c) ? c : r;
+    for (int i = 0; i < d; i++)
+    {
+        for (int j = i+1; j < r; j++)
+        {
+            if (A->elements[j][i] != 0)
+            {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 /*
 --------------------------- VECTOR FUNCTIONS BELOW -----------------------------
@@ -621,7 +666,7 @@ int is_symmetric(Matrix A)
  * @brief Allocates memory for a new vector.
  * 
  * @param d the dimension of the new vector
- * @return Vector: the new vector
+ * @returns Vector: the new vector
  */
 Vector new_vector(int d)
 {
@@ -634,10 +679,22 @@ Vector new_vector(int d)
 }
 
 /**
+ * @brief Frees a vector from memory.
+ * 
+ * @param v the vector
+ */
+void free_vector(Vector v)
+{
+    check_null(v);
+    free(v->elements);
+    free(v);
+}
+
+/**
  * @brief Allocates memory for a new vector, and copies the old vector to it.
  * 
  * @param A the vector to be copied
- * @return Vector: the copy
+ * @returns Vector: the copy
  */
 Vector copy_vector(Vector v)
 {
@@ -656,7 +713,7 @@ Vector copy_vector(Vector v)
  * 
  * @param v the first vector
  * @param w the second vector
- * @return int: 1 if the vectors have equal dimension and elements, 0 if not
+ * @returns int: 1 if the vectors have equal dimension and elements, 0 if not
  */
 int vector_is_equal(Vector v, Vector w)
 {
@@ -763,7 +820,7 @@ void print_vector(Vector v)
  * 
  * @param v the first vector
  * @param w the second vector
- * @return the sum
+ * @returns the sum
  */
 Vector add_vector(Vector v, Vector w)
 {
@@ -783,7 +840,7 @@ Vector add_vector(Vector v, Vector w)
  * 
  * @param A the matrix to be multiplied
  * @param v the vector to be multipled
- * @return the product
+ * @returns the product
  */
 Vector multiply_matrix_vector(Matrix A, Vector v)
 {
@@ -797,7 +854,7 @@ Vector multiply_matrix_vector(Matrix A, Vector v)
  * 
  * @param v the vector to be multiplied
  * @param k the scaling factor
- * @return Vector: the scaled vector
+ * @returns Vector: the scaled vector
  */
 Vector scale_vector(Vector v, elem_t k)
 {
@@ -815,7 +872,7 @@ Vector scale_vector(Vector v, elem_t k)
  * @brief Computes the length (norm) of a vector
  * 
  * @param v the vector
- * @return the length
+ * @returns the length
  */
 elem_t norm(Vector v)
 {
@@ -834,7 +891,7 @@ elem_t norm(Vector v)
  * @brief Normalizes a vector in place.
  * 
  * @param v the vector
- * @return elem_t: the length
+ * @returns elem_t: the length
  */
 elem_t normalize(Vector v)
 {
@@ -871,7 +928,7 @@ void normalize_columns(Matrix A)
  * 
  * @param v the first vector
  * @param w the second vector
- * @return the dot product
+ * @returns the dot product
  */
 elem_t dot_product(Vector v, Vector w)
 {
@@ -891,7 +948,7 @@ elem_t dot_product(Vector v, Vector w)
  * 
  * @param v the first vector, will be promoted to 3D if passed in 2D vector
  * @param w the second vector, will be promoted to 3D if passed in 2D vector
- * @return the crossed vector
+ * @returns the crossed vector
  */
 Vector cross_product(Vector v, Vector w)
 {
@@ -921,7 +978,7 @@ Vector cross_product(Vector v, Vector w)
  * @brief Converts a vector to a row matrix.
  * 
  * @param v the vector to be converted
- * @return the corresponding matrix
+ * @returns the corresponding matrix
  */
 Matrix vector_to_row_matrix(Vector v)
 {
@@ -939,7 +996,7 @@ Matrix vector_to_row_matrix(Vector v)
  * @brief Converts a vector to a column matrix.
  * 
  * @param v the vector to be converted
- * @return the corresponding matrix
+ * @returns the corresponding matrix
  */
 Matrix vector_to_column_matrix(Vector v)
 {
@@ -957,7 +1014,7 @@ Matrix vector_to_column_matrix(Vector v)
  * @brief Converts a matrix to a vector.
  * 
  * @param A the matrix to be converted, can be either 1xn or nx1
- * @return the corresponding vector
+ * @returns the corresponding vector
  */
 Vector matrix_to_vector(Matrix A)
 {
@@ -988,7 +1045,7 @@ Vector matrix_to_vector(Matrix A)
  * 
  * @param A the matrix
  * @param r the row number (index from 0)
- * @return the row vector
+ * @returns the row vector
  */
 Vector get_row_vector(Matrix A, int r)
 {
@@ -1008,7 +1065,7 @@ Vector get_row_vector(Matrix A, int r)
  * 
  * @param A the matrix
  * @param c the column number (index from 0)
- * @return the column vector
+ * @returns the column vector
  */
 Vector get_column_vector(Matrix A, int c)
 {
@@ -1069,7 +1126,7 @@ Vector *get_column_vectors(Matrix A)
  * @brief Generates an identity matrix.
  * 
  * @param d the size of the identity
- * @return the identity
+ * @returns the identity
  */
 Matrix identity(int d)
 {
@@ -1086,7 +1143,7 @@ Matrix identity(int d)
  * 
  * @param dim the dimension of the unit vector
  * @param n the index (from 0) of the unit vector, ie. which column of the identity it is
- * @return the unit vector
+ * @returns the unit vector
  */
 Vector std_unit_vector(int dim, int n)
 {
@@ -1104,27 +1161,26 @@ Vector std_unit_vector(int dim, int n)
  * @brief Computes the projection matrix of the space onto a vector. 
  * 
  * @param v the vector to be projected on to
- * @return the projection matrix
+ * @returns the projection matrix
  */
-Matrix vector_projection_matrix(const Vector v)
+Matrix vector_projection_matrix(Vector v)
 {
     check_null(v);
     elem_t length = norm(v);
-    if (length == 0)
+    if (nearly_zero(length))
     {
         return identity(v->dim);
     }
     Matrix proj_v = multiply_matrix(vector_to_column_matrix(v), vector_to_row_matrix(v));
-    proj_v = scale_matrix(proj_v, 1 / dot_product(v, v));
+    proj_v = scale_matrix(proj_v, 1 / (length * length));
     return proj_v;
 }
 
 /**
- * @brief Computes the Householder reflection matrix of the n-D space about a
- * vector, ie. rotating the space 180 degrees around that vector.
+ * @brief Computes the Householder reflection matrix of a vector.
  * 
  * @param v the vector about which the space is reflected
- * @return the reflection matrix
+ * @returns the reflection matrix
  */
 Matrix householder_reflection(Vector v)
 {
@@ -1132,5 +1188,5 @@ Matrix householder_reflection(Vector v)
     Matrix mir = vector_projection_matrix(v);
     mir = scale_matrix(mir, -2);
     Matrix I = identity(v->dim);
-    return add_matrix(mir, I);
+    return add_matrix(I, mir);
 }

@@ -1,3 +1,11 @@
+/**
+ * @file cmatrix_algebra.c
+ * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
+ * @brief Implementation of cmatrix_algebra.h
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <math.h>
 #include "cmatrix_algebra.h"
 #include "cmatrix_basics.h"
@@ -244,11 +252,13 @@ Matrix GS_orthogonal_basis(Vector *vecs, int nvecs)
     int d = vecs[0]->dim;
     Matrix basis = vector_to_column_matrix(vecs[0]);
     Matrix vec_to_perp = identity(d);
+    Vector vi_perp; 
+    Matrix v_prev_proj;
 
     for (int i = 1; i < nvecs; i++)
     {
-        Vector vi_perp = vecs[i];
-        Matrix v_prev_proj = vector_projection_matrix(vecs[i-1]);
+        vi_perp = vecs[i];
+        v_prev_proj = vector_projection_matrix(vecs[i-1]);
         v_prev_proj = scale_matrix(v_prev_proj, -1);
         vec_to_perp = add_matrix(vec_to_perp, v_prev_proj);
         vi_perp = multiply_matrix_vector(vec_to_perp, vi_perp);
@@ -268,65 +278,63 @@ Matrix *QR_decomposition(const Matrix A)
 {
     check_null(A);
     int r=A->rows, c=A->cols;
-    Matrix R = copy_matrix(A);
-    Matrix Q = identity(r);
-    for (int i = 0; i < c; i++)
+    if (c > r)
     {
-        Matrix A_sub = get_submatrix(A, i, i, r, c);
-        Vector col_i = get_column_vector(A_sub, 0);
-        Vector e_i = std_unit_vector(r-i, 0);
-        e_i = scale_vector(e_i, norm(col_i) * (-1));
-        Vector reflect_v = add_vector(col_i, e_i);  // v_i - norm(v_i) * e_i is the reflection vector
-        if (!nearly_zero(norm(reflect_v)))
-        {
-            normalize(reflect_v);
-            Matrix reflect_mat = householder_reflection(reflect_v);
-            Matrix reflect_mat_full = identity(r);
-            set_submatrix(reflect_mat_full, reflect_mat, i, i);
-            R = multiply_matrix(reflect_mat_full, R);
-            Q = multiply_matrix(reflect_mat_full, Q);
-        }
+        fprintf(stderr, "Cannot perform QR decomposition on row < column matrix.\n");
+        exit(1);
     }
-    return (Matrix []) {inverse(Q), R};
+    Matrix Q = identity(r);
+    Matrix R = copy_matrix(A);
+    Matrix A_sub, reflect_mat, reflect_mat_full;
+    Vector col_i, e_i, reflect_v;
+
+    int last_col_op = (A->cols == A->rows);
+
+    for (int i = 0; i < c - last_col_op; i++)
+    {
+        A_sub = get_submatrix(R, i, i, r, c);   // we must take the submat of R instead of A.
+        col_i = get_column_vector(A_sub, 0);
+        int sign = (col_i->elements[0] >= 0) ? -1 : 1;
+        col_i->elements[0] += norm(col_i) * sign;   // v_i +/- norm(v_i) * e_i is the reflection vector
+        reflect_mat = householder_reflection(col_i);
+        reflect_mat_full = identity(r);
+        set_submatrix(reflect_mat_full, reflect_mat, i, i);
+        Q = multiply_matrix(reflect_mat_full, Q);
+        R = multiply_matrix(reflect_mat_full, R);
+    }
+    return (Matrix []) {transpose(Q), R};
 }
 
 /**
- * @brief Computes the QR decomposition of a matrix, R only.
+ * @brief Computes the eigenvalues of a matrix using the QR algorithm. Assumes 
+ * that A has nice properties, such as full rank.
  * 
  * @param A the matrix
- * @return Matrix: the upper triangle matrix
+ * @return Vector: a vector containing the real eigenvalues
  */
-Matrix QR_decomposition_R_only(Matrix A)
+Vector eigenvalues(Matrix A)
 {
-    check_null(A);
-    int r=A->rows, c=A->cols;
-    Matrix R = copy_matrix(A);
+    check_square(A);
+    int d = A->rows;
+    Matrix *QR, Q_i, R_i, A_i=copy_matrix(A);
 
-    for (int i = 0; i < c; i++)
+    for (int i = 0; i < QR_ITER; i++)
     {
-        Matrix A_sub = get_submatrix(A, i, i, r, c);
-        Vector col_i = get_column_vector(A_sub, 0);
-        Vector e_i = std_unit_vector(r-i, 0);
-        e_i = scale_vector(e_i, norm(col_i) * (-1));
-        Vector reflect_v = add_vector(col_i, e_i);  // v_i - norm(v_i) * e_i is the reflection vector
-        if (!nearly_zero(norm(reflect_v)))
+        QR = QR_decomposition(A_i);
+        Q_i = QR[0];
+        R_i = QR[1];
+        A_i = multiply_matrix(R_i, Q_i);
+        if ((i % QR_CHECK_PERIOD == 0) && (is_upper_triangular(A_i)))
         {
-            normalize(reflect_v);
-            Matrix reflect_v_full = new_matrix(r, 1);
-            set_submatrix(reflect_v_full, vector_to_column_matrix(reflect_v), i, 0);
-            // ! this doesn't work: why can't we distribute I - 2uu'?
-            R = add_matrix(A, scale_matrix(multiply_matrix(reflect_v_full, multiply_matrix(transpose(reflect_v_full), A)), (elem_t) -2));
+            printf("%d", i);
+            break;
         }
     }
-    return R;
-}
 
-Matrix eigenvectors(Matrix A)
-{
-
-}
-
-elem_t *eigenvalues(Matrix A)
-{
-
+    Vector eigenvals = new_vector(d);
+    for (int i = 0; i < d; i++)
+    {
+        eigenvals->elements[i] = A_i->elements[i][i];
+    }
+    return eigenvals;
 }

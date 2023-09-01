@@ -12,8 +12,8 @@ elem_t determinant(Matrix);
 Vector solve_linear_system(Matrix, Vector);
 Matrix basis_transform(Matrix, Matrix);
 int linear_independence(Vector *, const int);
-Matrix *QR_decomposition(const Matrix);
-Matrix QR_decomposition_R_only(const Matrix);
-
+Matrix *QR_decomposition(Matrix);
+Matrix QR_decomposition_R_only(Matrix);
+Vector eigenvalues(Matrix);
 
 #endif

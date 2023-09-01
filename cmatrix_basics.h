@@ -14,6 +14,7 @@
 #include "cmatrix_defs.h"
 
 Matrix new_matrix(int, int);
+void free_matrix(Matrix);
 Matrix copy_matrix(Matrix);
 int matrix_is_equal(Matrix, Matrix);
 void set_matrix_by_value(Matrix, elem_t);
@@ -38,8 +39,10 @@ void set_submatrix(Matrix, Matrix, int, int);
 Matrix get_submatrix(Matrix, int, int, int, int);
 int is_symmetric(Matrix);
 int is_orthogonal(Matrix);
+int is_upper_triangular(Matrix);
 
 Vector new_vector(int);
+void free_vector(Vector);
 Vector copy_vector(Vector);
 int vector_is_equal(Vector, Vector);
 void set_vector_by_value(Vector, elem_t);
