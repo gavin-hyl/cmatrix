@@ -348,17 +348,16 @@ Vector eigenvalues(Matrix A)
         Q_i = QR[0];
         R_i = QR[1];
         A_i = multiply_matrix(R_i, Q_i);
-        if ((i % QR_CHECK_PERIOD == 0) && (is_upper_triangular(A_i)))
-        {
-            printf("%d", i);
-            break;
-        }
     }
 
-    Vector eigenvals = new_vector(d);
-    for (int i = 0; i < d; i++)
+    if (is_upper_triangular(A_i))
     {
-        eigenvals->elements[i] = A_i->elements[i][i];
+        Vector eigenvals = new_vector(d);
+        for (int i = 0; i < d; i++)
+        {
+            eigenvals->elements[i] = A_i->elements[i][i];
+        }
+        return eigenvals;
     }
-    return eigenvals;
+    return NULL;
 }

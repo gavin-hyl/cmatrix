@@ -17,7 +17,6 @@
 #define ELEMENT_PRINT_PRECISION 2   // precision of elements in print_matrix and print_vector
 #define EPSILON 1e-5                // the upper limit of what two floating points are considered equal
 #define QR_ITER 20                  // maximum iterations of the QR algorithm.
-#define QR_CHECK_PERIOD 10          // determines how often the matrix is checked to be upper-triangular in the QR algorithm.
 
 
 // The floating-point type that is used in calculations. 
