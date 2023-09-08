@@ -39,7 +39,7 @@ Matrix scale_matrix(Matrix, flt_t);
 Matrix matrix_power(Matrix, int);
 Matrix transpose(Matrix);
 Matrix inverse(Matrix);
-Matrix append_horizontal(const Matrix, const Matrix);
+Matrix append_horizontal(Matrix, Matrix);
 void set_submatrix(Matrix, Matrix, int, int);
 Matrix get_submatrix(Matrix, int, int, int, int);
 int is_symmetric(Matrix);
@@ -76,7 +76,7 @@ Vector *get_column_vectors(Matrix);
 
 Vector std_unit_vector(int, int);
 Matrix identity(int);
-Matrix householder_reflection(const Vector v);
-Matrix vector_projection_matrix(const Vector v);
+Matrix householder_reflection(Vector v);
+Matrix vector_projection_matrix(Vector v);
 
 #endif
