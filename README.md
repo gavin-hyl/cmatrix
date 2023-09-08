@@ -1,13 +1,23 @@
-# cmatrix - C-based Linear Algebra
-A lightweight C-based linear algebra library. Work in progress, please fork/raise an issue if you'd like to contribute!
+# `cmatrix` - C-based Linear Algebra
+A lightweight C-based linear algebra library. Work in progress, please fork/raise an issue if you'd like to contribute.
+
+# Contributors
+Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
 
 # File Structure (How to Use)
 
-This is intended as an overview, ***not an exhaustive list***. please refer to the documentation for more detailed descriptions of the functions included in this library.
+This is intended as an overview, ***not an exhaustive list***. please refer the files and function documentation for more detailed descriptions of cmatrix.
 ## `cmatrix.h`
-Includes everything that the library has to offer, essentially a one-stop approach for using this library. 
+A one-stop solution for everything that the library has to offer.
+```
+#include "cmatrix_defs.h"
+#include "cmatrix_basics.h"
+#include "cmatrix_algebra.h"
+#include "cmatrix_geometry.h"
+```
+
 ## `cmatrix_defs.h`
-Includes type definitions for vectors/matrices and basic error checking macros.
+Includes type definitions for vectors/matrices, error checking macros, and config variables.
 
 ### `flt_t`
 The floating point type to be used in this library. Only `float` and `double` are allowed, `long double` is not supported.
@@ -23,13 +33,13 @@ typedef struct MaTrix {
 ```
 Access an element on row `i` and column `j` as such:
 ```
-m->elements[i][j]
+m->elements[i][j]   // m is a Matrix
 ```
 
 ### `ROW_MAJOR` and `COLUMN_MAJOR`
 These two variables are used in modes for setting and getting matrix elements. 
 ### `Vector`
-Due to the pervasivenss of vectors in linear algebra, a seperate object is defined specially for vectors. The struct itself contains the dimension of the vector and the element array.
+Due to the pervasivenss of vectors in linear algebra, a seperate object is defined for vectors. The struct itself contains the dimension of the vector and the element array.
 ```
 typedef struct VecTor {
     int dim;
@@ -38,21 +48,21 @@ typedef struct VecTor {
 ```
 Access the `i`'th element as such:
 ```
-v->elements[i]
+v->elements[i]  // v is a Vector
 ```
 Vectors and matrices may be converted to one another, see `cmatrix_basics.h`.
 
 ## `cmatrix_basics.h`
-Includes all the basic opertions needed for `Matrix` and `Vector` creation, conversion, manipulation, and property checks.
+Includes all the basic opertions needed for `Matrix` and `Vector` creation, conversion, manipulation, displayment, and property checks.
 
 ### Creation
-Creating and freeing `Matrix` objects:
+Creating and freeing `Matrix`s:
 ```
 Matrix new_matrix(int, int);
 void free_matrix(Matrix);
 Matrix copy_matrix(Matrix);
 ```
-Creating and freeing `Vector` objects:
+Creating and freeing `Vector`s:
 ```
 Vector new_vector(int);
 void free_vector(Vector);
@@ -65,7 +75,7 @@ Common matrices and vectors:
 #define ex3 std_unit_vector(3, 0)
 #define ey3 std_unit_vector(3, 1)
 #define ez3 std_unit_vector(3, 2)
-// ...
+
 Vector std_unit_vector(int, int);
 Matrix identity(int);
 Matrix householder_reflection(Vector v);
@@ -90,11 +100,12 @@ Matrix combine_column_vectors(Vector *, int);
 ```
 It should be noted that when passing in an argument for `Vector *`, it should be casted first to `(Vector [])`, as such:
 ```
-Matrix M = combine_row_vectors((Vector []) {ex2, ex3}, 2)
+// M is the 2x2 identity
+Matrix M = combine_row_vectors((Vector []) {ex2, ey2}, 2);
 ```
 
 ### Manipulation
-We can set the values of the `elements` array in `Matrix` objects in bulk by using the following functions:
+We can set the values of the `elements` array in `Matrix`s in bulk by using the following functions:
 ```
 void set_matrix_by_value(Matrix, flt_t);
 void set_matrix_by_function(Matrix, flt_t (*)(int, int));
@@ -103,9 +114,9 @@ void set_matrix_row(Matrix, int, flt_t *);
 void set_matrix_column(Matrix, int, flt_t *);
 ```
 
-Note that for the operations listed below, all will return a new `Matrix` or `Vector`, if applicable.
+Note that for the operations listed below, all will return a new `Matrix` or `Vector`, if possible.
 
-For `Matrix` objects, some common operations are
+For `Matrix`s, some common operations are
 ```
 Matrix add_matrix(Matrix, Matrix);
 Matrix multiply_matrix(Matrix, Matrix);
@@ -115,7 +126,7 @@ Matrix transpose(Matrix);
 Matrix inverse(Matrix);
 ```
 
-For `Vector` objects, some common operations are
+For `Vector`s, some common operations are
 ```
 Vector add_vector(Vector, Vector);
 Vector multiply_matrix_vector(Matrix, Vector);
@@ -125,8 +136,15 @@ flt_t normalize(Vector);
 flt_t dot_product(Vector, Vector);
 Vector cross_product(Vector, Vector);
 ```
+
+### Displayment
+Prints `Matrix`s and `Vector`s to standard error in a formatted manner.
+```
+void print_matrix(Matrix);
+void print_vector(Vector);
+```
 ### Property checks
-Mainly for `Matrix` objects. Returns 1 for true.
+Returns 1 for true.
 ```
 int is_symmetric(Matrix);
 int is_orthogonal(Matrix);

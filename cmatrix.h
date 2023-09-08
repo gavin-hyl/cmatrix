@@ -3,7 +3,7 @@
  * @author Gavin Hua (139950129+GavinHYL@users.noreply.github.com)
  * @brief Declarations and definitinos for the cmatrix library.
  * 
- * CMatrix - a lightweight linear algebra library for embedded systems.
+ * CMatrix - a lightweight linear algebra library.
  * 
  * @copyright Copyright (c) 2023
  * 

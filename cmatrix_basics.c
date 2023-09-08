@@ -309,24 +309,24 @@ void print_matrix(Matrix A)
     int r=A->rows, c=A->cols;
     if (r == 1)
     {
-        fprintf(stdout, "( ");
+        fprintf(stderr, "( ");
         print_row(A, 0);
-        fprintf(stdout, " )\n");
+        fprintf(stderr, " )\n");
         return;
     }
 
-    fprintf(stdout, "/ ");
+    fprintf(stderr, "/ ");
     print_row(A, 0);
-    fprintf(stdout, " \\\n");
+    fprintf(stderr, " \\\n");
     for (int i = 1; i < r-1; i++)
     {
-        fprintf(stdout, "| ");
+        fprintf(stderr, "| ");
         print_row(A, i);
-        fprintf(stdout, " |\n");
+        fprintf(stderr, " |\n");
     }
-    fprintf(stdout, "\\ ");
+    fprintf(stderr, "\\ ");
     print_row(A, r-1);
-    fprintf(stdout, " /\n\n");
+    fprintf(stderr, " /\n\n");
 }
 
 /**
@@ -342,8 +342,8 @@ void print_row(Matrix A, int r)
 
     for (int i = 0; i < c; i++)
     {
-        fprintf(stdout, "%*.*f", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, (float) A->elements[r][i]);
-        fprintf(stdout, (i == c-1) ? "" : " ");
+        fprintf(stderr, "%*.*f", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, (float) A->elements[r][i]);
+        fprintf(stderr, (i == c-1) ? "" : " ");
     }
 }
 
@@ -362,7 +362,7 @@ Matrix add_matrix(Matrix A, Matrix B)
     
     if (r1!=r2 || c1!=c2)
     {
-        fprintf(stdout, "ERROR (A_add): Matrices must be same size.\n");
+        fprintf(stderr, "ERROR (A_add): Matrices must be same size.\n");
     }
     Matrix result = new_matrix(r1, c1);
     for (int i = 0; i < r1; i++)
@@ -804,15 +804,15 @@ void print_vector(Vector v)
 
     if (d == 1)
     {
-        fprintf(stdout, "(%*.*f)\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
+        fprintf(stderr, "(%*.*f)\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
         return;
     }
-    fprintf(stdout, "/%*.*f\\\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
+    fprintf(stderr, "/%*.*f\\\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[0]);
     for (int i = 1; i < d-1; i++)
     {
-        fprintf(stdout, "|%*.*f|\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[i]);
+        fprintf(stderr, "|%*.*f|\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[i]);
     }
-    fprintf(stdout, "\\%*.*f/\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[d-1]);
+    fprintf(stderr, "\\%*.*f/\n", ELEMENT_PRINT_WIDTH, ELEMENT_PRINT_PRECISION, v->elements[d-1]);
 }
 
 /**
