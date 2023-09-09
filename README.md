@@ -23,7 +23,7 @@ Includes type definitions for vectors/matrices, error checking macros, and confi
 The floating point type to be used in this library. Only `float` and `double` are allowed, `long double` is not supported.
 
 ### `Matrix`
-Whenever we declare a matrix, we declare a pointer to a struct that represents a generic matrix. The struct itself contains the number of rows, number of columns, and the element array. Storage allocation is taken care of by the `new_matrix` function.
+Whenever we declare a matrix, we declare a *pointer* to a struct that represents a matrix. The struct itself contains the number of rows, number of columns, and the element array. Storage allocation is taken care of by the `new_matrix` function.
 ```
 typedef struct MaTrix {
     int rows;
@@ -39,7 +39,7 @@ m->elements[i][j]   // m is a Matrix
 ### `ROW_MAJOR` and `COLUMN_MAJOR`
 These two variables are used in modes for setting and getting matrix elements. 
 ### `Vector`
-Due to the pervasivenss of vectors in linear algebra, a seperate object is defined for vectors. The struct itself contains the dimension of the vector and the element array.
+A seperate type (pointer to struct) is defined for vectors. The struct itself contains the dimension of the vector and the element array.
 ```
 typedef struct VecTor {
     int dim;
