@@ -4,11 +4,9 @@ A lightweight C-based linear algebra library. Work in progress, please fork/rais
 
 ## Contributors
 
-Gavin Hua ([Email me](139950129+GavinHYL@users.noreply.github.com))
+Gavin Hua ([Email](139950129+GavinHYL@users.noreply.github.com))
 
-## File Structure (How to Use)
-
-This is intended as an overview, *not an exhaustive list*. please refer the files and function documentation for more detailed descriptions of cmatrix.
+## File Structure
 
 ### `cmatrix.h`
 
