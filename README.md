@@ -1,6 +1,6 @@
 # `cmatrix` - C-based Linear Algebra
 
-A lightweight C-based linear algebra library. Work in progress, please fork/raise an issue if you'd like to contribute.
+A lightweight C-based linear algebra library.
 
 ## Contributors
 

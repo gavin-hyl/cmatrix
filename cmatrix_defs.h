@@ -24,7 +24,7 @@
 typedef double flt_t;  
 #define nearly_zero(e) ((e)<=EPSILON && (e)>=EPSILON*-1)
 
-typedef struct MaTrix {
+typedef struct Matrix_t {
     int rows;
     int cols;
     flt_t **elements;
@@ -32,7 +32,7 @@ typedef struct MaTrix {
 
 enum {ROW_MAJOR, COLUMN_MAJOR};
 
-typedef struct VecTor {
+typedef struct Vector_t {
     int dim;
     flt_t *elements;
 } *Vector;
